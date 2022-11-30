@@ -1,6 +1,6 @@
-import {useState} from 'react'
+import {useState,useEffect} from 'react'
 import { Link,Navigate } from 'react-router-dom'
-import {createUserWithEmailAndPassword,updateProfile} from 'firebase/auth'
+import {createUserWithEmailAndPassword,updateProfile,RecaptchaVerifier} from 'firebase/auth'
 import {auth} from '../firebase.config'
 
 const Signup = () => {
@@ -13,6 +13,28 @@ const Signup = () => {
   const [phoneNo,setPhoneNo] = useState('');
   const [errPhoneNo,setErrPhoneNo] = useState('');
   const [redirect,setRedirect] = useState(false);
+  const [otp,setOtp] = useState('');
+  const [errOtp,setErrOtp] = useState('');
+  const [verifyBtn,setVerifyBtn] = useState(false)
+  const [verifyOtp,setVerifyOtp] = useState(false)
+
+  useEffect(() =>{
+    const onChangeMobile = () => {
+  
+      if(phoneNo.length>10 || phoneNo.length<10) {
+        setVerifyBtn(false)
+      }
+  
+      if(phoneNo.length===10) {
+        setVerifyBtn(true)
+        // setPhoneNo(e.target.value)
+        console.log(phoneNo)
+      }
+    }
+
+    onChangeMobile()
+  },[phoneNo])
+
 
   const validateForm = () => {
     let validity = true
@@ -56,7 +78,7 @@ const Signup = () => {
 
     if(phoneNo==='') {
       validity = false
-      setErrPassword('*Please enter your Phone Number')
+      setErrPhoneNo('*Please enter your Phone Number')
     }
 
     if (typeof(phoneNo) !== 'undefined') {
@@ -64,12 +86,24 @@ const Signup = () => {
 
       if(!pattern.test(phoneNo)) {
         validity = false
-        setErrPassword('*Please enter a valid phone number')
+        setErrPhoneNo('*Please enter a valid phone number')
       }
 
-      if (!(password.length > 13)) {
+      if (!(phoneNo.length===10)) {
         validity = false
-        setErrPassword('*Please enter a valid phone number')
+        setErrPhoneNo('*Please enter a valid phone number')
+      }
+    }
+
+    if(otp==='') {
+      validity = false
+      setErrOtp('*Please Enter Your OTP')
+    }
+
+    if(typeof(otp) !== 'undefined') {
+      if (!(username.length === 6)) {
+        validity = false
+        setErrUsername('*Please Enter a Valid OTP')
       }
     }
 
@@ -100,11 +134,12 @@ const Signup = () => {
     setUsername('')
     setEmail('')
     setPassword('')
+    setPhoneNo()
   }
 
   return (
     <div className='Signup'>
-      <div className="container">
+      <div className="container2">
         <form method='post' 
         className="form" 
         name='Login-Form' 
@@ -143,13 +178,42 @@ const Signup = () => {
           </div>
 
           <div className="control">
-            <label htmlFor="password">Phone Number</label>
+            <label htmlFor="Phoneno">Phone Number</label>
             <input type="text" 
             name='phoneno'
             onChange={e => setPhoneNo(e.target.value)}
             placeholder='Enter Phone Number'
             />
             <small className="errorMsg">{errPhoneNo}</small>
+            {
+              verifyBtn?
+              <>
+              <br />
+              <button className="get-otp">Get OTP</button>
+              </>
+              :null
+            }
+            
+
+          </div>
+
+          <div className="control">
+            <label htmlFor="OTP">OTP</label>
+            <input type="text" 
+            name='otp'
+            onChange={e => setOtp(e.target.value)}
+            placeholder='Enter OTP'
+            />
+            <small className="errorMsg">{errOtp}</small>
+            {
+              verifyOtp?
+              <>
+              <br />
+              <button className="verify-otp">Verify OTP</button>
+              </>
+              :null 
+            }
+            
           </div>
 
           <div className="control">
