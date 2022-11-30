@@ -1,6 +1,6 @@
 import {useState,useEffect} from 'react'
 import { Link,Navigate } from 'react-router-dom'
-import {createUserWithEmailAndPassword,updateProfile,RecaptchaVerifier} from 'firebase/auth'
+import {createUserWithEmailAndPassword,updateProfile,RecaptchaVerifier,signInWithPhoneNumber} from 'firebase/auth'
 import {auth} from '../firebase.config'
 
 const Signup = () => {
@@ -35,6 +35,41 @@ const Signup = () => {
     onChangeMobile()
   },[phoneNo])
 
+  const onCaptchaVerify = () => {
+    window.recaptchaVerifier = new RecaptchaVerifier('sign-in-button', {
+      'size': 'invisible',
+      'callback': (res) => {
+        // reCAPTCHA solved, allow signInWithPhoneNumber.
+        onSignInSubmit();
+      }
+    }, auth);
+  }
+
+  const onSignInSubmit = (e) => {
+    e.preventDefault()
+    onCaptchaVerify();
+    const phoneNumber = "+91"+phoneNo;
+    const appVerifier = window.recaptchaVerifier;
+
+    signInWithPhoneNumber(auth, phoneNumber, appVerifier)
+    .then((confirmationResult) => {
+      window.confirmationResult = confirmationResult;
+      alert("OTP Sent!")
+      setVerifyOtp(true)
+    }).catch((err) => {
+      console.log(err)
+    });
+  }
+
+  const verifyCode = () => {
+    window.confirmationResult.confirm(otp).then((result) => {
+      const user = result.user;
+      console.log(user)
+      // ...
+    }).catch((err) => {
+      console.log(err)
+    });
+  }
 
   const validateForm = () => {
     let validity = true
@@ -189,7 +224,7 @@ const Signup = () => {
               verifyBtn?
               <>
               <br />
-              <button className="get-otp">Get OTP</button>
+              <button onClick={(e) => onSignInSubmit(e)} className="get-otp">Get OTP</button>
               </>
               :null
             }
@@ -197,24 +232,22 @@ const Signup = () => {
 
           </div>
 
-          <div className="control">
-            <label htmlFor="OTP">OTP</label>
-            <input type="text" 
-            name='otp'
-            onChange={e => setOtp(e.target.value)}
-            placeholder='Enter OTP'
-            />
-            <small className="errorMsg">{errOtp}</small>
-            {
-              verifyOtp?
-              <>
+          {
+            verifyOtp?
+            <div className="control">
+              <label htmlFor="OTP">OTP</label>
+              <input type="text" 
+              name='otp'
+              onChange={e => setOtp(e.target.value)}
+              placeholder='Enter OTP'
+              />
+              <small className="errorMsg">{errOtp}</small>            
               <br />
-              <button className="verify-otp">Verify OTP</button>
-              </>
-              :null 
-            }
-            
-          </div>
+              <button onClick={verifyCode} className="verify-otp">Verify OTP</button>           
+              
+            </div>
+            :null
+          }  
 
           <div className="control">
             <span>Already have an account? <Link to='/login' className='login-link-1'>Login</Link></span>
