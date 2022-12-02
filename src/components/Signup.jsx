@@ -1,9 +1,10 @@
 import {useState,useEffect} from 'react'
 import { Link,Navigate } from 'react-router-dom'
-import {createUserWithEmailAndPassword,updateProfile,RecaptchaVerifier,signInWithPhoneNumber} from 'firebase/auth'
-import {auth} from '../firebase.config'
+import {createUserWithEmailAndPassword,updateProfile,RecaptchaVerifier,signInWithPhoneNumber, getAuth} from 'firebase/auth'
+import {app} from '../firebase.config'
 
 const Signup = () => {
+  const auth = getAuth(app)
   const [username,setUsername] = useState('');
   const [email,setEmail] = useState('');
   const [password,setPassword] = useState('');
@@ -21,11 +22,11 @@ const Signup = () => {
   useEffect(() =>{
     const onChangeMobile = () => {
   
-      if(phoneNo.length>10 || phoneNo.length<10) {
+      if(phoneNo?.length>10 || phoneNo?.length<10 || typeof(phoneNo===undefined)) {
         setVerifyBtn(false)
       }
   
-      if(phoneNo.length===10) {
+      if(phoneNo?.length===10) {
         setVerifyBtn(true)
         // setPhoneNo(e.target.value)
         console.log(phoneNo)
@@ -57,7 +58,7 @@ const Signup = () => {
       alert("OTP Sent!")
       setVerifyOtp(true)
     }).catch((err) => {
-      console.log(err)
+      console.log(err,"hi")
     });
   }
 
@@ -65,9 +66,9 @@ const Signup = () => {
     window.confirmationResult.confirm(otp).then((result) => {
       const user = result.user;
       console.log(user)
-      // ...
+      alert("Phone Number verified!")
     }).catch((err) => {
-      console.log(err)
+      alert(err)
     });
   }
 
@@ -130,34 +131,25 @@ const Signup = () => {
       }
     }
 
-    if(otp==='') {
-      validity = false
-      setErrOtp('*Please Enter Your OTP')
-    }
-
-    if(typeof(otp) !== 'undefined') {
-      if (!(username.length === 6)) {
-        validity = false
-        setErrUsername('*Please Enter a Valid OTP')
-      }
-    }
-
     return validity
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  const handleSubmit = async () => {
+    // e.preventDefault()
 
     if(validateForm()) {
       console.log(username)
       console.log(email)
       console.log(password)
-
+      const cell = parseInt(phoneNo)
+      console.log(cell)
     createUserWithEmailAndPassword(auth,email,password)
     .then(async (res) => {
       const user = res.user
+      console.log(user)
       await updateProfile(user, {
         displayName: username,
+        phoneNumber: cell,
       })
     })
     .catch(err => console.log(err))
@@ -166,22 +158,33 @@ const Signup = () => {
     setRedirect(true)
     }
 
-    setUsername('')
-    setEmail('')
-    setPassword('')
-    setPhoneNo()
+    // setUsername('')
+    // setEmail('')
+    // setPassword('')
+    // setPhoneNo()
+  }
+
+  const handleForm = () => {
+    if(username.length>3 || email.length>0 || password.length>6 || phoneNo.length===10 || otp.length===6) {
+      setErrUsername('')
+      setErrEmail('')
+      setErrPassword('')
+      setErrPhoneNo('')
+      setErrOtp('')
+    }
   }
 
   return (
     <div className='Signup'>
       <div className="container2">
-        <form method='post' 
+        <div  
         className="form" 
         name='Login-Form' 
-        onSubmit={(e) => handleSubmit(e)}
+        onChange={handleForm}
+        // onSubmit={(e) => handleSubmit(e)}
         >
           <h2>Sign Up</h2>
-
+          <div id='sign-in-button'></div>
           <div className="control">
             <label htmlFor="username">Username</label>
             <input type="text" 
@@ -253,8 +256,8 @@ const Signup = () => {
             <span>Already have an account? <Link to='/login' className='login-link-1'>Login</Link></span>
           </div>
 
-          <input type='submit' className='button' value='Sign Up' />
-        </form>
+          <button onClick={handleSubmit} className='button'>Sign Up</button>
+        </div>
         {redirect===true ? <Navigate to='/login' /> : ''}
       </div>
     </div>
