@@ -2,9 +2,9 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./components/Home";
 import Signup from "./components/Signup";
 import Login from "./components/Login";
-import Current from "./components/userComponent";
-import Shg from "./components/shg-details";
-import Register from "./components/register";
+import Current from "./components/User";
+import Shg from "./components/Details";
+import Register from "./components/Register";
 
 import "./App.css";
 
