@@ -3,7 +3,7 @@ import Home from "./components/Home";
 import Signup from "./components/Signup";
 import Login from "./components/Login";
 import Current from "./components/User";
-import Shg from "./components/Details";
+import Details from "./components/Details";
 import Register from "./components/Register";
 
 import "./App.css";
@@ -17,7 +17,7 @@ function App() {
                     <Route path="/signup" element={<Signup />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/testcomp" element={<Current />} />
-                    <Route path="/details" element={<Shg />}></Route>
+                    <Route path="/details" element={<Details />}></Route>
                     <Route path="/register" element={< Register/>}></Route>
                 </Routes>
             </Router>
