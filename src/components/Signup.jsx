@@ -1,9 +1,10 @@
-import {useState} from 'react'
+import {useState,useEffect} from 'react'
 import { Link,Navigate } from 'react-router-dom'
-import {createUserWithEmailAndPassword,updateProfile} from 'firebase/auth'
-import {auth} from '../firebase.config'
+import {createUserWithEmailAndPassword,updateProfile,RecaptchaVerifier,signInWithPhoneNumber, getAuth} from 'firebase/auth'
+import {app} from '../firebase.config'
 
 const Signup = () => {
+  const auth = getAuth(app)
   const [username,setUsername] = useState('');
   const [email,setEmail] = useState('');
   const [password,setPassword] = useState('');
@@ -13,6 +14,63 @@ const Signup = () => {
   const [phoneNo,setPhoneNo] = useState('');
   const [errPhoneNo,setErrPhoneNo] = useState('');
   const [redirect,setRedirect] = useState(false);
+  const [otp,setOtp] = useState('');
+  const [errOtp,setErrOtp] = useState('');
+  const [verifyBtn,setVerifyBtn] = useState(false)
+  const [verifyOtp,setVerifyOtp] = useState(false)
+
+  useEffect(() =>{
+    const onChangeMobile = () => {
+  
+      if(phoneNo?.length>10 || phoneNo?.length<10 || typeof(phoneNo===undefined)) {
+        setVerifyBtn(false)
+      }
+  
+      if(phoneNo?.length===10) {
+        setVerifyBtn(true)
+        // setPhoneNo(e.target.value)
+        console.log(phoneNo)
+      }
+    }
+
+    onChangeMobile()
+  },[phoneNo])
+
+  const onCaptchaVerify = () => {
+    window.recaptchaVerifier = new RecaptchaVerifier('sign-in-button', {
+      'size': 'invisible',
+      'callback': (res) => {
+        // reCAPTCHA solved, allow signInWithPhoneNumber.
+        onSignInSubmit();
+      }
+    }, auth);
+  }
+
+  const onSignInSubmit = (e) => {
+    e.preventDefault()
+    onCaptchaVerify();
+    const phoneNumber = "+91"+phoneNo;
+    const appVerifier = window.recaptchaVerifier;
+
+    signInWithPhoneNumber(auth, phoneNumber, appVerifier)
+    .then((confirmationResult) => {
+      window.confirmationResult = confirmationResult;
+      alert("OTP Sent!")
+      setVerifyOtp(true)
+    }).catch((err) => {
+      console.log(err,"hi")
+    });
+  }
+
+  const verifyCode = () => {
+    window.confirmationResult.confirm(otp).then((result) => {
+      const user = result.user;
+      console.log(user)
+      alert("Phone Number verified!")
+    }).catch((err) => {
+      alert(err)
+    });
+  }
 
   const validateForm = () => {
     let validity = true
@@ -56,7 +114,7 @@ const Signup = () => {
 
     if(phoneNo==='') {
       validity = false
-      setErrPassword('*Please enter your Phone Number')
+      setErrPhoneNo('*Please enter your Phone Number')
     }
 
     if (typeof(phoneNo) !== 'undefined') {
@@ -64,31 +122,34 @@ const Signup = () => {
 
       if(!pattern.test(phoneNo)) {
         validity = false
-        setErrPassword('*Please enter a valid phone number')
+        setErrPhoneNo('*Please enter a valid phone number')
       }
 
-      if (!(password.length > 13)) {
+      if (!(phoneNo.length===10)) {
         validity = false
-        setErrPassword('*Please enter a valid phone number')
+        setErrPhoneNo('*Please enter a valid phone number')
       }
     }
 
     return validity
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  const handleSubmit = async () => {
+    // e.preventDefault()
 
     if(validateForm()) {
       console.log(username)
       console.log(email)
       console.log(password)
-
+      const cell = parseInt(phoneNo)
+      console.log(cell)
     createUserWithEmailAndPassword(auth,email,password)
     .then(async (res) => {
       const user = res.user
+      console.log(user)
       await updateProfile(user, {
         displayName: username,
+        phoneNumber: cell,
       })
     })
     .catch(err => console.log(err))
@@ -97,21 +158,33 @@ const Signup = () => {
     setRedirect(true)
     }
 
-    setUsername('')
-    setEmail('')
-    setPassword('')
+    // setUsername('')
+    // setEmail('')
+    // setPassword('')
+    // setPhoneNo()
+  }
+
+  const handleForm = () => {
+    if(username.length>3 || email.length>0 || password.length>6 || phoneNo.length===10 || otp.length===6) {
+      setErrUsername('')
+      setErrEmail('')
+      setErrPassword('')
+      setErrPhoneNo('')
+      setErrOtp('')
+    }
   }
 
   return (
     <div className='Signup'>
-      <div className="container">
-        <form method='post' 
+      <div className="container2">
+        <div  
         className="form" 
         name='Login-Form' 
-        onSubmit={(e) => handleSubmit(e)}
+        onChange={handleForm}
+        // onSubmit={(e) => handleSubmit(e)}
         >
           <h2>Sign Up</h2>
-
+          <div id='sign-in-button'></div>
           <div className="control">
             <label htmlFor="username">Username</label>
             <input type="text" 
@@ -143,21 +216,48 @@ const Signup = () => {
           </div>
 
           <div className="control">
-            <label htmlFor="password">Phone Number</label>
+            <label htmlFor="Phoneno">Phone Number</label>
             <input type="text" 
             name='phoneno'
             onChange={e => setPhoneNo(e.target.value)}
             placeholder='Enter Phone Number'
             />
             <small className="errorMsg">{errPhoneNo}</small>
+            {
+              verifyBtn?
+              <>
+              <br />
+              <button onClick={(e) => onSignInSubmit(e)} className="get-otp">Get OTP</button>
+              </>
+              :null
+            }
+            
+
           </div>
+
+          {
+            verifyOtp?
+            <div className="control">
+              <label htmlFor="OTP">OTP</label>
+              <input type="text" 
+              name='otp'
+              onChange={e => setOtp(e.target.value)}
+              placeholder='Enter OTP'
+              />
+              <small className="errorMsg">{errOtp}</small>            
+              <br />
+              <button onClick={verifyCode} className="verify-otp">Verify OTP</button>           
+              
+            </div>
+            :null
+          }  
 
           <div className="control">
             <span>Already have an account? <Link to='/login' className='login-link-1'>Login</Link></span>
           </div>
 
-          <input type='submit' className='button' value='Sign Up' />
-        </form>
+          <button onClick={handleSubmit} className='button'>Sign Up</button>
+        </div>
         {redirect===true ? <Navigate to='/login' /> : ''}
       </div>
     </div>
