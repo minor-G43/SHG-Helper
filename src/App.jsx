@@ -4,7 +4,7 @@ import Signup from "./components/Signup";
 import Login from "./components/Login";
 import Current from "./components/User";
 import Details from "./components/Details";
-import Register from "./components/Register";
+import Register from "./components/register";
 
 import "./App.css";
 
