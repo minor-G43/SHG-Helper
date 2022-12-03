@@ -1,271 +1,288 @@
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: system-ui;
+    font-weight: 100;
 }
 
-.Login, .Signup,.Home, .User, .Details, .Register {
-  background-color: #8EC5FC;
-  background-image: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  margin: 0;
+.Login,
+.Signup,
+.Home,
+.User,
+.Details,
+.Register {
+    background-color: #8ec5fc;
+    background-image: linear-gradient(62deg, #8ec5fc 0%, #e0c3fc 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
 }
 
 .Home {
-text-align: center;
+    text-align: center;
 }
 .links-home {
-font: bold;
-display: flex;
-text-align: center;
-justify-content: space-around;
-padding-bottom: 40px;
+    font: bold;
+    display: flex;
+    text-align: center;
+    justify-content: space-around;
+    padding-bottom: 40px;
 }
 
 h2 {
-  text-align: center;
-  margin: 0 0 20px; 
+    text-align: center;
+    margin: 0 0 20px;
 }
 
-.container, .card, .container2, .container3 {
-  background: #fff;
-  border-radius: 4px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
-  width: 550px;
+.container,
+.card,
+.container2,
+.container3 {
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+    width: 550px;
 }
 
 .container2 {
-  margin: 80px auto;
+    margin: 80px auto;
 }
 
 .container3 {
-  margin: 120px auto;
+    margin: 120px auto;
 }
 
 .article-head {
-  margin-top: 100px;
-  text-align: center;
+    margin-top: 100px;
+    text-align: center;
 }
 
 .card-grid {
-margin: 100px 100px 100px 320px;
+    margin: 100px 100px 100px 320px;
 }
 
 .card {
-margin-left: 0px;
-width: 900px;
+    margin-left: 0px;
+    width: 900px;
 }
 
 .container.post {
-margin-top: 80px;
-margin-left: 500px;
+    margin-top: 80px;
+    margin-left: 500px;
 }
 
 .errorMsg {
-  color: red;
-  font-weight: bold;
-  margin-bottom: 12px;
+    color: red;
+    font-weight: bold;
+    margin-bottom: 12px;
 }
 
 .form {
-  padding: 30px 40px;
+    padding: 30px 40px;
 }
 
-.control,.control-2 {
-  margin-bottom: 10px;
-  padding-bottom: 20px;
-  position: relative;
+.control,
+.control-2 {
+    margin-bottom: 10px;
+    padding-bottom: 20px;
+    position: relative;
 }
 
 .control label {
-  font-weight: bold;
-  display: block;
-  margin-bottom: 5px;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
 }
 
-.control input, .control textarea, .control-2 .comm-value {
-  border: 2px solid white;
-  border-radius: 4px;
-  display: block;
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
+.control input,
+.control textarea,
+.control-2 .comm-value {
+    border: 2px solid white;
+    border-radius: 4px;
+    display: block;
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
 }
-
-
 
 .control-2 .comm-value {
-  display: inline;
-  width: 400px;
+    display: inline;
+    width: 400px;
 }
 
 .control textarea {
-  padding: 15px 10px 25px 10px;
+    padding: 15px 10px 25px 10px;
 }
 
-
-.control input::placeholder,.control textarea::placeholder {
-  color: darkgray;
+.control input::placeholder,
+.control textarea::placeholder {
+    color: darkgray;
 }
 
-.control input:focus, .control textarea:focus {
-  outline: 0;
-  border-color: lightgray;
+.control input:focus,
+.control textarea:focus {
+    outline: 0;
+    border-color: lightgray;
 }
 
 span {
-  font-weight: bold;
+    font-weight: bold;
 }
 
-.button,.button2 {
-  cursor: pointer;
-  border: 1px solid #0d6efd;
-  text-align: center;
-  background-color: #0d6efd;
-  font-weight: bold;
-  padding: 12px 120px;
-  color: white;
-  font-size: 15px;
-  border-radius: 4px;
-  margin-top: 20px;
-  margin-left: 95px;
-  }
+.button,
+.button2 {
+    cursor: pointer;
+    border: 1px solid #0d6efd;
+    text-align: center;
+    background-color: #0d6efd;
+    font-weight: bold;
+    padding: 12px 120px;
+    color: white;
+    font-size: 15px;
+    border-radius: 4px;
+    margin-top: 20px;
+    margin-left: 95px;
+}
 
-  .button2 {
+.button2 {
     margin-left: 20px;
     padding: 10px 30px;
-  }
+}
 
-  .button:hover, .btn:hover {
-      color: #0d6efd;
-      background: white;
-      transition: all 0.5s linear;
-    }
+.button:hover,
+.btn:hover {
+    color: #0d6efd;
+    background: white;
+    transition: all 0.5s linear;
+}
 
-    @media screen and (max-width: 770px)  {
-      .container {
+@media screen and (max-width: 770px) {
+    .container {
         width: 440px;
-      }
-
-      .button {
-        margin-left: 30px;
-      }
     }
+
+    .button {
+        margin-left: 30px;
+    }
+}
 
 .login-link-1 {
-  color: #0d6efd;
-  text-decoration: none;
+    color: #0d6efd;
+    text-decoration: none;
 }
-.login-link, .signup-link {
-  color: #0d6efd;
-  margin-top: 20px;
-  text-decoration: none;
-  border: 1px solid #0d6efd;
-  padding: 10px;
-  border-radius: 5px;
-}
-
-.login-link:hover, .signup-link:hover {
-  color: white;
-  background-color: #0d6efd;
-  transition: all 0.5s linear;
+.login-link,
+.signup-link {
+    color: #0d6efd;
+    margin-top: 20px;
+    text-decoration: none;
+    border: 1px solid #0d6efd;
+    padding: 10px;
+    border-radius: 5px;
 }
 
-.get-otp,.verify-otp {
-  margin-top: 20px;
-  background: transparent;
-  border: none;
-  color: #0d6efd;
-  font-weight: bold;
-  cursor: pointer;
+.login-link:hover,
+.signup-link:hover {
+    color: white;
+    background-color: #0d6efd;
+    transition: all 0.5s linear;
+}
+
+.get-otp,
+.verify-otp {
+    margin-top: 20px;
+    background: transparent;
+    border: none;
+    color: #0d6efd;
+    font-weight: bold;
+    cursor: pointer;
 }
 
 .btns {
-display: flex;
-justify-content: space-between;
+    display: flex;
+    justify-content: space-between;
 }
 
 .btn-logout {
-  justify-content: right;
-  text-align: right;
-  margin-top: 30px;
-  margin-right: 50px;
+    justify-content: right;
+    text-align: right;
+    margin-top: 30px;
+    margin-right: 50px;
 }
 
 .btn-back {
-  margin-top: 30px;
-  margin-left: 50px;
+    margin-top: 30px;
+    margin-left: 50px;
 }
 
 .btn {
-  color: #fff;
-  font-weight: bold;
-  font-size: 15px;
-  background-color: #0d6efd;
-  border: 1px solid #0d6efd;
-  border-radius: 4px;
-  padding: 15px 30px;
-  cursor: pointer;
+    color: #fff;
+    font-weight: bold;
+    font-size: 15px;
+    background-color: #0d6efd;
+    border: 1px solid #0d6efd;
+    border-radius: 4px;
+    padding: 15px 30px;
+    cursor: pointer;
 }
 
 .img-post {
-width: 230px;
-height: 200px;
-border-radius: 4px;
-margin: 20px;
+    width: 230px;
+    height: 200px;
+    border-radius: 4px;
+    margin: 20px;
 }
 
 .img-post-2 {
-width: 300px;
-height: 200px;
-border-radius: 4px;
-margin-top: 30px;
-/* margin: 20px; */
+    width: 300px;
+    height: 200px;
+    border-radius: 4px;
+    margin-top: 30px;
+    /* margin: 20px; */
 }
 
 .like-btn {
-padding: 5px;
-background-color: transparent;
-border: 1px solid #0d6efd;
-border-radius: 4px;
-color: #0d6efd;
-cursor: pointer;
+    padding: 5px;
+    background-color: transparent;
+    border: 1px solid #0d6efd;
+    border-radius: 4px;
+    color: #0d6efd;
+    cursor: pointer;
 }
 
 .liked {
-color: white;
-background-color: #0d6efd;
+    color: white;
+    background-color: #0d6efd;
 }
 
 .no-posts-head {
-text-align: center;
-margin: 60px auto;
+    text-align: center;
+    margin: 60px auto;
 }
 
 .comment-box {
-margin-right: 400px;
-/* border: 1px solid black; */
-border-radius: 5px;
-background-color: lightgray;
-padding: 10px 20px;
+    margin-right: 400px;
+    /* border: 1px solid black; */
+    border-radius: 5px;
+    background-color: lightgray;
+    padding: 10px 20px;
 }
 
 .comment-sec {
-margin-top: 80px;
-margin-left: 150px;
+    margin-top: 80px;
+    margin-left: 150px;
 }
 
 .comment-text {
-margin-top: 30px;
+    margin-top: 30px;
 }
 
 .threads {
-margin-top: 50px;
+    margin-top: 50px;
 }
 
 .user-msg {
-margin-top: 20px;
+    margin-top: 20px;
 }
