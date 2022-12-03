@@ -15,16 +15,24 @@ const Signup = () => {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [errUsername, setErrUsername] = useState("");
-    const [errEmail, setErrEmail] = useState("");
-    const [errPassword, setErrPassword] = useState("");
+    const [aadhar,setAadhar] = useState('')
+    const [accno,setAccno] = useState('')
+    const [ifsc,setIfsc] = useState('')
     const [phoneNo, setPhoneNo] = useState("");
-    const [errPhoneNo, setErrPhoneNo] = useState("");
+    
     const [redirect, setRedirect] = useState(false);
     const [otp, setOtp] = useState("");
     const [errOtp, setErrOtp] = useState("");
     const [verifyBtn, setVerifyBtn] = useState(false);
     const [verifyOtp, setVerifyOtp] = useState(false);
+    const [errUsername, setErrUsername] = useState("");
+    const [errEmail, setErrEmail] = useState("");
+    const [errPassword, setErrPassword] = useState("");
+    const [errPhoneNo, setErrPhoneNo] = useState("");
+    const [errAadhar,setErrAadhar] = useState('')
+    const [errAccno,setErrAccno] = useState('')
+    const [errIfsc,setErrIfsc] = useState('')
+    
 
     useEffect(() => {
         const onChangeMobile = () => {
@@ -153,6 +161,42 @@ const Signup = () => {
             }
         }
 
+        if (aadhar === "") {
+          validity = false;
+          setErrAadhar("*Please Enter Your Aadhar Card Number");
+      }
+
+      if (typeof aadhar !== "undefined") {
+          if (!(aadhar.length === 12)) {
+              validity = false;
+              setErrAadhar("*Please Enter a valid Aadhar Number");
+          }
+      }
+
+      if (accno === "") {
+        validity = false;
+        setErrAccno("*Please Enter Your Bank Account Number");
+    }
+
+    if (typeof accno !== "undefined") {
+        if (!(accno.length >= 6 && accno.length < 40)) {
+            validity = false;
+            setErrAccno("*Please Enter a valid Bank Account Number");
+        }
+    }
+
+    if (ifsc === "") {
+      validity = false;
+      setErrIfsc("*Please Enter Your IFSC Code");
+  }
+
+  if (typeof ifsc !== "undefined") {
+      if (!(ifsc.length === 11)) {
+          validity = false;
+          setErrIfsc("*Please Enter a valid IFSC Code");
+      }
+  }
+
         return validity;
     };
 
@@ -172,6 +216,9 @@ const Signup = () => {
                         username: username,
                         email: email,
                         phoneNo: phoneNo,
+                        accno: accno,
+                        aadhar: aadhar,
+                        ifsc: ifsc
                     });
                     console.log(val);
                     await updateProfile(user, {
@@ -204,6 +251,9 @@ const Signup = () => {
             setErrPassword("");
             setErrPhoneNo("");
             setErrOtp("");
+            setErrAadhar("")
+            setErrAccno("")
+            setErrIfsc("")
         }
     };
 
@@ -289,6 +339,39 @@ const Signup = () => {
                             </button>
                         </div>
                     ) : null}
+
+                      <div className="control">
+                        <label htmlFor="aadhar">Aadhar Card Number</label>
+                        <input
+                            type="text"
+                            name="aadhar"
+                            onChange={(e) => setAadhar(e.target.value)}
+                            placeholder="Enter Aadhar Card Number"
+                        />
+                        <small className="errorMsg">{errAadhar}</small>
+                      </div>
+
+                      <div className="control">
+                        <label htmlFor="accno">Bank Account Number</label>
+                        <input
+                            type="text"
+                            name="accno"
+                            onChange={(e) => setAccno(e.target.value)}
+                            placeholder="Enter Bank Account Number"
+                        />
+                        <small className="errorMsg">{errAccno}</small>
+                      </div>
+
+                      <div className="control">
+                        <label htmlFor="ifsc">IFSC Code</label>
+                        <input
+                            type="text"
+                            name="ifsc"
+                            onChange={(e) => setIfsc(e.target.value)}
+                            placeholder="Enter IFSC Code"
+                        />
+                        <small className="errorMsg">{errIfsc}</small>
+                      </div>
 
                     <div className="control">
                         <span>
