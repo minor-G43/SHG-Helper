@@ -5,8 +5,8 @@ import Login from "./components/Login";
 import Current from "./components/User";
 import Details from "./components/Details";
 import Register from "./components/register";
-
 import "./App.css";
+
 
 function App() {
     return (
@@ -18,7 +18,7 @@ function App() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/testcomp" element={<Current />} />
                     <Route path="/details" element={<Details />}></Route>
-                    <Route path="/register" element={< Register/>}></Route>
+                    <Route path="/register" element={<Register />}></Route>
                 </Routes>
             </Router>
         </div>
