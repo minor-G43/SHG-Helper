@@ -8,6 +8,7 @@ import {
     getAuth,
 } from "firebase/auth";
 import { app, db } from "../firebase.config";
+import bankData from '../bankData.json'
 import { addDoc, collection } from "firebase/firestore";
 
 const Signup = () => {
@@ -19,7 +20,9 @@ const Signup = () => {
     const [accno,setAccno] = useState('')
     const [ifsc,setIfsc] = useState('')
     const [phoneNo, setPhoneNo] = useState("");
-    
+    const [verifyBank,setVerifyBank] = useState(false)
+    const [bankValid,setBankValid] = useState(false)
+    const [phoneValid,setPhoneValid] = useState(false)
     const [redirect, setRedirect] = useState(false);
     const [otp, setOtp] = useState("");
     const [errOtp, setErrOtp] = useState("");
@@ -53,6 +56,22 @@ const Signup = () => {
 
         onChangeMobile();
     }, [phoneNo]);
+
+    useEffect(() => {
+        const onChangeBank = () => {
+            if((aadhar?.length < 12 || aadhar?.length > 12 || typeof (aadhar === undefined)) &&
+               (accno?.length < 8 || aadhar?.length > 20 || typeof (accno === undefined)) &&
+               (ifsc?.length < 11 || ifsc?.length > 11 || typeof (ifsc === undefined))
+            ) {
+                setVerifyBank(false)
+            }
+
+            if (aadhar?.length === 12 && ifsc?.length === 11 && (accno?.length > 8 && accno?.length < 20)) {
+                setVerifyBank(true);
+            }
+        }
+        onChangeBank()
+    })
 
     const onCaptchaVerify = () => {
         window.recaptchaVerifier = new RecaptchaVerifier(
@@ -91,6 +110,7 @@ const Signup = () => {
             .then((result) => {
                 const user = result.user;
                 console.log(user);
+                setPhoneValid(true)
                 alert("Phone Number verified!");
             })
             .catch((err) => {
@@ -179,7 +199,7 @@ const Signup = () => {
     }
 
     if (typeof accno !== "undefined") {
-        if (!(accno.length >= 6 && accno.length < 40)) {
+        if (!(accno.length >= 9 && accno.length <= 20)) {
             validity = false;
             setErrAccno("*Please Enter a valid Bank Account Number");
         }
@@ -195,6 +215,16 @@ const Signup = () => {
           validity = false;
           setErrIfsc("*Please Enter a valid IFSC Code");
       }
+  }
+
+  if(phoneValid===false) {
+    validity = false
+    alert("Phone number not verified")
+  }
+
+  if(bankValid===false) {
+    validity = false
+    alert("Bank records not verified")
   }
 
         return validity;
@@ -237,6 +267,27 @@ const Signup = () => {
         // setPassword('')
         // setPhoneNo()
     };
+
+    const handleBank = (e) => {
+        e.preventDefault()
+
+        for (let i = 0; i < Object.values(bankData).length; i++) {
+            if (accno === Object.values(bankData)[i].bank_acc && 
+                aadhar === Object.values(bankData)[i].aadhar && 
+                ifsc === Object.values(bankData)[i].ifsc) 
+                {
+                setBankValid(true)
+            }
+        }
+        if(bankValid) {
+            alert("Bank details verified successfully!")
+        }
+        else {
+            alert("Bank does not exist!")
+        }
+
+        console.log("Bank")
+    }
 
     const handleForm = () => {
         if (
@@ -371,6 +422,18 @@ const Signup = () => {
                             placeholder="Enter IFSC Code"
                         />
                         <small className="errorMsg">{errIfsc}</small>
+
+                        {verifyBank ? (
+                            <>
+                                <br />
+                                <button
+                                    onClick={(e) => handleBank(e)}
+                                    className="get-otp"
+                                >
+                                    Verify Bank
+                                </button>
+                            </>
+                        ) : null}
                       </div>
 
                     <div className="control">
