@@ -71,7 +71,7 @@ const Signup = () => {
             }
         }
         onChangeBank()
-    })
+    },[aadhar,ifsc,accno])
 
     const onCaptchaVerify = () => {
         window.recaptchaVerifier = new RecaptchaVerifier(
@@ -233,9 +233,9 @@ const Signup = () => {
     const handleSubmit = async () => {
         // e.preventDefault()
         if (validateForm()) {
-            console.log(username);
-            console.log(email);
-            console.log(password);
+            // console.log(username);
+            // console.log(email);
+            // console.log(password);
             const cell = parseInt(phoneNo);
             console.log(cell);
             createUserWithEmailAndPassword(auth, email, password)
@@ -248,7 +248,8 @@ const Signup = () => {
                         phoneNo: phoneNo,
                         accno: accno,
                         aadhar: aadhar,
-                        ifsc: ifsc
+                        ifsc: ifsc,
+                        role: "user"
                     });
                     console.log(val);
                     await updateProfile(user, {
