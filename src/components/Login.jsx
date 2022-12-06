@@ -91,12 +91,12 @@ const Login = () => {
           </div>
 
           <div className="control">
-            <span>Don't have an account? <Link to='/signup' className='login-link-1'>Signup</Link></span>
+            <span>Don't have an account? <Link to='/user-signup' className='login-link-1'>Signup</Link></span>
           </div>
 
           <input type='submit' className='button' value='Login' />
         </form>
-        {redirect===true ? <Navigate to='/testcomp' /> : ''}
+        {redirect===true ? <Navigate to='/user' /> : ''}
       </div>
     </div>
   )

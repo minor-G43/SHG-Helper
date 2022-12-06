@@ -1,5 +1,7 @@
 import { useState,useEffect } from "react";
-import { app, db } from "../firebase.config";
+import { app, db, storage } from "../firebase.config";
+import { Navigate } from "react-router-dom";
+
 import {
     createUserWithEmailAndPassword,
     updateProfile,
@@ -7,6 +9,7 @@ import {
     signInWithPhoneNumber,
     getAuth,
 } from "firebase/auth";
+import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import bankData from '../bankData.json'
 import '../App.css'
 import { collection, addDoc, Timestamp, doc } from "firebase/firestore";
@@ -26,6 +29,8 @@ const Register = () => {
     const [bankValid,setBankValid] = useState(false)
     const [phoneValid,setPhoneValid] = useState(false)
     const [redirect, setRedirect] = useState(false);
+    const [progress, setProgress] = useState(0);
+    const [filename,setFilename] = useState("")
     const [otp, setOtp] = useState("");
     const [errOtp, setErrOtp] = useState("");
     const [verifyBtn, setVerifyBtn] = useState(false);
@@ -277,6 +282,11 @@ const Register = () => {
         //     setErrRole("*Please enter Role");
         // }
 
+        if(filename === "") {
+            validity = false
+            alert("Bank Verification document not uploaded")
+        }
+
         return validity;
     };
 
@@ -294,8 +304,9 @@ const Register = () => {
                 shg_name: name,
                 state: userState,
                 district: district,
-                intrest_rate: rate,
+                interest_rate: rate,
                 village_name: vname,
+                shg_doc: filename,
                 role: "admin",
             });
             console.log(val)
@@ -303,6 +314,7 @@ const Register = () => {
 
         if(bankValid && phoneValid) {
             alert("SHG creation request sent successfully!")
+            setRedirect(true)
         }
 
         // setName("");
@@ -333,6 +345,45 @@ const Register = () => {
         }
 
         console.log("Bank")
+    }
+
+    const handleFile = e => {
+        e.preventDefault()
+        const file = e.target.files[0]
+        console.log(file)
+
+        uploadFiles(file)
+        // const storageRef = app.storage().ref()
+        // const fileRef = storageRef.child(file.name)
+
+        // fileRef.put(file).then(() => {
+        //     console.log("uploaded file", file.name)
+        // })
+    }
+
+    const uploadFiles = file => {
+        if(!file)
+        return
+
+        const storageRef = ref(storage, `files/${file.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, file);
+
+        uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+            const prog = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+            );
+            setProgress(prog);
+        },
+        (error) => console.log(error),
+        () => {
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            setFilename(downloadURL)
+            console.log("File available at", downloadURL);
+            });
+        }
+        );
     }
 
     const handleForm = () => {
@@ -554,6 +605,17 @@ const Register = () => {
                         <small className="errorMsg">{errRate}</small>
                     </div>
 
+                    <div className="control">
+                        <label htmlFor="shg-doc">SHG Bank Verified Document</label>
+                        <input
+                            type="file"
+                            name="shg-doc"
+                            onChange={handleFile}
+                        />
+                        <small>Uploading done {progress} %</small>
+                        {/* <small className="errorMsg">{errRate}</small> */}
+                    </div>
+
                     {/* <div className="control">
                         <label htmlFor="role">Role</label>
                         <input
@@ -581,7 +643,7 @@ const Register = () => {
 
                     {/* <input type="submit" className="button" value="Register" /> */}
                 </div>
-                {/* {redirect===true ? <Navigate to='/posts' /> : ''} */}
+                {redirect===true ? <Navigate to='/' /> : ''}
             </div>
         </div>
     );
