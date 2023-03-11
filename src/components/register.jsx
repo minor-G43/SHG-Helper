@@ -3,8 +3,6 @@ import { app, db, storage } from "../firebase.config";
 import { Navigate } from "react-router-dom";
 
 import {
-    createUserWithEmailAndPassword,
-    updateProfile,
     RecaptchaVerifier,
     signInWithPhoneNumber,
     getAuth,
@@ -12,7 +10,7 @@ import {
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import bankData from '../bankData.json'
 import '../App.css'
-import { collection, addDoc, Timestamp, doc } from "firebase/firestore";
+import { collection, addDoc } from "firebase/firestore";
 
 import "../App.css";
 
@@ -277,11 +275,6 @@ const Register = () => {
             setErrRate("*Please enter Rate");
         }
 
-        // if (role === "") {
-        //     validity = false;
-        //     setErrRole("*Please enter Role");
-        // }
-
         if(filename === "") {
             validity = false
             alert("Bank Verification document not uploaded")
@@ -304,6 +297,7 @@ const Register = () => {
                 shg_name: name,
                 state: userState,
                 district: district,
+                pname: panName,
                 interest_rate: rate,
                 village_name: vname,
                 shg_doc: filename,
@@ -613,35 +607,10 @@ const Register = () => {
                             onChange={handleFile}
                         />
                         <small>Uploading done {progress} %</small>
-                        {/* <small className="errorMsg">{errRate}</small> */}
                     </div>
-
-                    {/* <div className="control">
-                        <label htmlFor="role">Role</label>
-                        <input
-                            list="role"
-                            name="role"
-                            value={role}
-                            placeholder="Enter Your Role"
-                            onChange={(e) => setRole(e.target.value)}
-                        />
-                        <datalist id="role">
-                            <option value="PRESIDENT" />
-                            <option value="VICE PRESIDENT" />
-                            <option value="TREASURER" />
-                        </datalist>
-                        <small className="errorMsg">{errRole}</small>
-                    </div> */}
-
                     <button onClick={handleSubmit} className="button">
                         Sign Up
                     </button>
-
-                    {/* <div className="control">
-            <span>Don't have an account? <Link to='/signup' className='login-link-1'>Signup</Link></span>
-          </div> */}
-
-                    {/* <input type="submit" className="button" value="Register" /> */}
                 </div>
                 {redirect===true ? <Navigate to='/' /> : ''}
             </div>

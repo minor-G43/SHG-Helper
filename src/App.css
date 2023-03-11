@@ -11,9 +11,11 @@
 .Home,
 .User,
 .Details,
-.Register {
+.Register,
+.Details {
     background-color: #8ec5fc;
-    background-image: linear-gradient(62deg, #8ec5fc 0%, #e0c3fc 100%);
+    background: linear-gradient(rgba(253, 161, 114, 0.4), rgba(253, 161, 114, 0.4)), url("shg-pic.jpeg") center/cover no-repeat fixed;
+    /* background-image: linear-gradient(62deg, #8ec5fc 0%, #e0c3fc 100%); */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -286,3 +288,30 @@ span {
 .user-msg {
     margin-top: 20px;
 }
+
+.member-border-4 {
+    border: 1px solid transparent;
+    padding: 10px;
+    border-radius: 5px;
+    /* background: white; */
+    padding-top: 0;
+    /* padding-bottom: 50px; */
+}
+
+.member-border-3 {
+    border: 1px solid black;
+    padding: 10px;
+    border-radius: 5px;
+    background: lightgray;
+    margin: 30px 300px 200px 300px;
+    padding: 250px auto;
+    justify-content: center;
+    padding-bottom: 50px;
+    padding-top: 30px;
+}
+
+.reg-head {
+    margin-top: 50px;
+    text-align: center;
+}
+
