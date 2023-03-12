@@ -7,9 +7,9 @@ const Home = () => {
       <h1>SHG Helper <br /><br /><br /> Home Page</h1>
       <br />
       <div className="links-home">
-        <Link to='/user-signup' style={{fontWeight: 'bold'}} className='signup-link'>Sign Up as User</Link>
-        <Link to='/login' style={{fontWeight: 'bold'}} className='login-link'>Login</Link>
-        <Link to='/admin-signup' style={{fontWeight: 'bold'}} className='login-link'>Sign Up as Admin </Link>
+        <Link to='/user' style={{fontWeight: 'bold'}} className='signup-link'>Sign Up/Login as User</Link>
+        {/* <Link to='/login' style={{fontWeight: 'bold'}} className='login-link'>Login</Link> */}
+        <Link to='/admin' style={{fontWeight: 'bold'}} className='login-link'>Sign Up/Login as Admin </Link>
 
       </div>
       </div>

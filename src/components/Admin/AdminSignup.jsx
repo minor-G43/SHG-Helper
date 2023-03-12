@@ -1,17 +1,18 @@
-import { useState, useEffect } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { useState,useEffect } from "react";
+import { app, db, storage } from "../../firebase.config";
+import { Navigate } from "react-router-dom";
+
 import {
-    createUserWithEmailAndPassword,
-    updateProfile,
     RecaptchaVerifier,
     signInWithPhoneNumber,
     getAuth,
 } from "firebase/auth";
-import { app, db } from "../firebase.config";
-import bankData from '../bankData.json'
-import { addDoc, collection } from "firebase/firestore";
+import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import bankData from '../../bankData.json'
+import '../../App.css'
+import { collection, addDoc } from "firebase/firestore";
 
-const Signup = () => {
+const Register = () => {
     const auth = getAuth(app);
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
@@ -24,6 +25,8 @@ const Signup = () => {
     const [bankValid,setBankValid] = useState(false)
     const [phoneValid,setPhoneValid] = useState(false)
     const [redirect, setRedirect] = useState(false);
+    const [progress, setProgress] = useState(0);
+    const [filename,setFilename] = useState("")
     const [otp, setOtp] = useState("");
     const [errOtp, setErrOtp] = useState("");
     const [verifyBtn, setVerifyBtn] = useState(false);
@@ -35,7 +38,20 @@ const Signup = () => {
     const [errAadhar,setErrAadhar] = useState('')
     const [errAccno,setErrAccno] = useState('')
     const [errIfsc,setErrIfsc] = useState('')
-    
+    const [name, setName] = useState("");
+    const [panName, setpanName] = useState("");
+    const [userState, setUserState] = useState("");
+    const [district, setDistrict] = useState("");
+    const [vname, setvName] = useState("");
+    const [rate, setRate] = useState("");
+    // const [role, setRole] = useState("");
+    const [errName, setErrName] = useState("");
+    const [errPanName, setErrPanName] = useState("");
+    const [errUserState, setErrUserState] = useState("");
+    const [errDistrict, setErrDistrict] = useState("");
+    const [errVname, setErrVName] = useState("");
+    const [errRate, setErrRate] = useState("");
+    const [errRole, setErrRole] = useState("");
 
     useEffect(() => {
         const onChangeMobile = () => {
@@ -196,77 +212,110 @@ const Signup = () => {
       if (accno === "") {
         validity = false;
         setErrAccno("*Please Enter Your Bank Account Number");
-    }
+            }
 
-    if (typeof accno !== "undefined") {
-        if (!(accno.length >= 9 && accno.length <= 20)) {
+            if (typeof accno !== "undefined") {
+                if (!(accno.length >= 9 && accno.length <= 20)) {
+                    validity = false;
+                    setErrAccno("*Please Enter a valid Bank Account Number");
+                }
+            }
+
+            if (ifsc === "") {
             validity = false;
-            setErrAccno("*Please Enter a valid Bank Account Number");
+            setErrIfsc("*Please Enter Your IFSC Code");
         }
-    }
 
-    if (ifsc === "") {
-      validity = false;
-      setErrIfsc("*Please Enter Your IFSC Code");
-  }
+        if (typeof ifsc !== "undefined") {
+            if (!(ifsc.length === 11)) {
+                validity = false;
+                setErrIfsc("*Please Enter a valid IFSC Code");
+            }
+        }
 
-  if (typeof ifsc !== "undefined") {
-      if (!(ifsc.length === 11)) {
-          validity = false;
-          setErrIfsc("*Please Enter a valid IFSC Code");
-      }
-  }
+        if(phoneValid===false) {
+            validity = false
+            alert("Phone number not verified")
+        }
 
-  if(phoneValid===false) {
-    validity = false
-    alert("Phone number not verified")
-  }
+        if(bankValid===false) {
+            validity = false
+            alert("Bank records not verified")
+        }
 
-  if(bankValid===false) {
-    validity = false
-    alert("Bank records not verified")
-  }
+        if (name === "") {
+            validity = false;
+            setErrName("*Please enter SHG Name");
+        }
+
+        if (panName === "") {
+            validity = false;
+            setErrPanName("*Please Enter Panchayat Name");
+        }
+
+        if (userState === "") {
+            validity = false;
+            setErrUserState("*Please enter State");
+        }
+
+        if (district === "") {
+            validity = false;
+            setErrDistrict("*Please enter District");
+        }
+
+        if (vname === "") {
+            validity = false;
+            setErrVName("*Please enter Village");
+        }
+
+        if (rate === "") {
+            validity = false;
+            setErrRate("*Please enter Rate");
+        }
+
+        if(filename === "") {
+            validity = false
+            alert("Bank Verification document not uploaded")
+        }
 
         return validity;
     };
 
-    const handleSubmit = async () => {
-        // e.preventDefault()
-        if (validateForm()) {
-            // console.log(username);
-            // console.log(email);
-            // console.log(password);
-            const cell = parseInt(phoneNo);
-            console.log(cell);
-            createUserWithEmailAndPassword(auth, email, password)
-                .then(async (res) => {
-                    const user = res.user;
-                    console.log(user);
-                    const val = await addDoc(collection(db, "user"), {
-                        username: username,
-                        email: email,
-                        phoneNo: phoneNo,
-                        accno: accno,
-                        aadhar: aadhar,
-                        ifsc: ifsc,
-                        role: "user"
-                    });
-                    console.log(val);
-                    await updateProfile(user, {
-                        displayName: username,
-                        phoneNumber: cell,
-                    });
-                })
-                .catch((err) => console.log(err));
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-            alert("Registered Successfully!");
-            setRedirect(true);
+        if (validateForm()) {
+            const val = await addDoc(collection(db, "shg"), {
+                username: username,
+                email: email,
+                phoneNo: phoneNo,
+                accno: accno,
+                aadhar: aadhar,
+                ifsc: ifsc,
+                shg_name: name,
+                state: userState,
+                district: district,
+                pname: panName,
+                interest_rate: rate,
+                village_name: vname,
+                shg_doc: filename,
+                role: "admin",
+            });
+            console.log(val)
         }
 
-        // setUsername('')
-        // setEmail('')
-        // setPassword('')
-        // setPhoneNo()
+        if(bankValid && phoneValid) {
+            alert("SHG creation request sent successfully!")
+            setRedirect(true)
+        }
+
+        // setName("");
+        // setUserState("");
+        // setDistrict("");
+        // setpanName("");
+        // setvName("");
+        // setRate("");
+        // setRole("");
     };
 
     const handleBank = (e) => {
@@ -290,6 +339,45 @@ const Signup = () => {
         console.log("Bank")
     }
 
+    const handleFile = e => {
+        e.preventDefault()
+        const file = e.target.files[0]
+        console.log(file)
+
+        uploadFiles(file)
+        // const storageRef = app.storage().ref()
+        // const fileRef = storageRef.child(file.name)
+
+        // fileRef.put(file).then(() => {
+        //     console.log("uploaded file", file.name)
+        // })
+    }
+
+    const uploadFiles = file => {
+        if(!file)
+        return
+
+        const storageRef = ref(storage, `files/${file.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, file);
+
+        uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+            const prog = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+            );
+            setProgress(prog);
+        },
+        (error) => console.log(error),
+        () => {
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            setFilename(downloadURL)
+            console.log("File available at", downloadURL);
+            });
+        }
+        );
+    }
+
     const handleForm = () => {
         if (
             username.length > 3 ||
@@ -306,27 +394,33 @@ const Signup = () => {
             setErrAadhar("")
             setErrAccno("")
             setErrIfsc("")
+            setErrPanName("")
+            setErrUserState("")
+            setErrDistrict("")
+            setErrVName("")
+            setErrRate("")
+            setErrName("")
         }
     };
 
     return (
-        <div className="Signup">
-            <div className="container2">
+        <div className="Register">
+            <div className="container3">
                 <div
                     className="form"
                     name="Login-Form"
                     onChange={handleForm}
-                    // onSubmit={(e) => handleSubmit(e)}
                 >
-                    <h2>Sign Up</h2>
+                    <h2>New SHG User Registration</h2>
+
                     <div id="sign-in-button"></div>
                     <div className="control">
-                        <label htmlFor="username">Username</label>
+                        <label htmlFor="username">Admin Name</label>
                         <input
                             type="text"
                             name="username"
                             onChange={(e) => setUsername(e.target.value)}
-                            placeholder="Enter Username"
+                            placeholder="Enter Admin name"
                         />
                         <small className="errorMsg">{errUsername}</small>
                     </div>
@@ -438,22 +532,88 @@ const Signup = () => {
                       </div>
 
                     <div className="control">
-                        <span>
-                            Already have an account?{" "}
-                            <Link to="/login" className="login-link-1">
-                                Login
-                            </Link>
-                        </span>
+                        <label htmlFor="shg-name">SHG Name</label>
+                        <input
+                            type="text"
+                            name="shg-name"
+                            onChange={(e) => setName(e.target.value)}
+                            placeholder="Enter SHG Name"
+                        />
+                        <small className="errorMsg">{errName}</small>
                     </div>
 
+                    <div className="control">
+                        <label htmlFor="state">State</label>
+                        <input
+                            type="text"
+                            name="state"
+                            onChange={(e) => setUserState(e.target.value)}
+                            placeholder="Enter State"
+                        />
+                        <small className="errorMsg">{errUserState}</small>
+                    </div>
+
+                    <div className="control">
+                        <label htmlFor="district">District</label>
+                        <input
+                            type="text"
+                            name="district"
+                            onChange={(e) => setDistrict(e.target.value)}
+                            placeholder="Enter District"
+                        />
+                        <small className="errorMsg">{errDistrict}</small>
+                    </div>
+
+                    <div className="control">
+                        <label htmlFor="panchayat-name">Panchayat Name</label>
+                        <input
+                            type="text"
+                            name="panchayat-name"
+                            onChange={(e) => setpanName(e.target.value)}
+                            placeholder="Enter Panchayat"
+                        />
+                        <small className="errorMsg">{errPanName}</small>
+                    </div>
+
+                    <div className="control">
+                        <label htmlFor="village-name">Village Name</label>
+                        <input
+                            type="text"
+                            name="village-name"
+                            onChange={(e) => setvName(e.target.value)}
+                            placeholder="Enter Village"
+                        />
+                        <small className="errorMsg">{errVname}</small>
+                    </div>
+
+                    <div className="control">
+                        <label htmlFor="interest-rate">Interest Rate</label>
+                        <input
+                            type="text"
+                            name="interest-rate"
+                            onChange={(e) => setRate(e.target.value)}
+                            placeholder="Enter Interest Rate"
+                        />
+                        <small className="errorMsg">{errRate}</small>
+                    </div>
+
+                    <div className="control">
+                        <label htmlFor="shg-doc">SHG Bank Verified Document</label>
+                        <input
+                            type="file"
+                            name="shg-doc"
+                            onChange={handleFile}
+                        />
+                        <small>Uploading done {progress} %</small>
+                    </div>
                     <button onClick={handleSubmit} className="button">
                         Sign Up
                     </button>
                 </div>
-                {redirect === true ? <Navigate to="/login" /> : ""}
+                {redirect===true ? <Navigate to='/' /> : ''}
             </div>
         </div>
     );
 };
 
-export default Signup;
+export default Register;

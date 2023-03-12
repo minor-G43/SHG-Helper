@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap');
+
 * {
     margin: 0;
     padding: 0;
@@ -12,7 +14,8 @@
 .User,
 .Details,
 .Register,
-.Details {
+.Details,
+.Main {
     background-color: #8ec5fc;
     background: linear-gradient(rgba(253, 161, 114, 0.4), rgba(253, 161, 114, 0.4)), url("shg-pic.jpeg") center/cover no-repeat fixed;
     /* background-image: linear-gradient(62deg, #8ec5fc 0%, #e0c3fc 100%); */
@@ -315,3 +318,22 @@ span {
     text-align: center;
 }
 
+.main-head {
+    margin-top: 10px;
+    display: flex;
+    text-align: center;
+    justify-content: space-between;
+}
+
+.main-2, .main-1 {
+    font-size: 30px;
+    font-family: 'Noto Sans', sans-serif;
+    color: #fff;
+    letter-spacing: 5px;
+    font-weight: bold;
+}
+
+.main-1 {
+    letter-spacing: 2px;
+    color: green;
+}

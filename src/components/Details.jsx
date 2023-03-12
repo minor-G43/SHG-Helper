@@ -108,10 +108,6 @@ const Details = () => {
       </Table>
     </TableContainer>
           {/* </div> */}
-
-            {/* <Typography>
-              SHG Past Details <span style={{marginLeft: 50}}>(An SHG must be formed six months before the official Registration)</span>
-            </Typography> */}
           {/* </Stack> */}
         </div>
     </div>

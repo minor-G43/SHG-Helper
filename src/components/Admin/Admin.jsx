@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import "../App.css";
+import "../../App.css";
 
 const Current = () => {
     return (
@@ -9,18 +9,18 @@ const Current = () => {
             <div className="container">
                 <div className="links-home">
                     <Link
-                        to="/details"
+                        to="/admin-signup"
                         style={{ fontWeight: "bold" }}
                         className="login-link"
                     >
-                        Current User
+                        Signup
                     </Link>
                     <Link
-                        to="/register"
+                        to="/admin-login"
                         style={{ fontWeight: "bold" }}
                         className="login-link"
                     >
-                        New User
+                        Login
                     </Link>
                 </div>
             </div>
