@@ -2,6 +2,7 @@ import {useState} from 'react'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { Link,Navigate } from 'react-router-dom'
 import { auth } from '../../firebase.config'
+import bcrypt from 'bcryptjs'
 
 const Login = () => {
   const [email,setEmail] = useState('');
@@ -43,10 +44,10 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-
+    const hashedPassword = bcrypt.hashSync(password, "$2a$10$VOewjLxpFub4SeAk1vtbK.")
     if(validateForm()) {
 
-    signInWithEmailAndPassword(auth,email,password)
+    signInWithEmailAndPassword(auth,email,hashedPassword)
     .then(async (res) => {
       console.log(res)
       localStorage.setItem("user_id",res.user.uid)
@@ -96,7 +97,7 @@ const Login = () => {
 
           <input type='submit' className='button' value='Login' />
         </form>
-        {redirect===true ? <Navigate to='/user' /> : ''}
+        {redirect===true ? <Navigate to='/shg-list' /> : ''}
       </div>
     </div>
   )

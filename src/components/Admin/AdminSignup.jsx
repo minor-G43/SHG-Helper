@@ -1,7 +1,7 @@
 import { useState,useEffect } from "react";
 import { app, db, storage } from "../../firebase.config";
 import { Navigate } from "react-router-dom";
-
+import bcrypt from 'bcryptjs'
 import {
     RecaptchaVerifier,
     signInWithPhoneNumber,
@@ -283,11 +283,15 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        // const salt = bcrypt.genSaltSync(10)
+        // console.log("salt",salt)
+        const hashedPassword = bcrypt.hashSync(password, "$2a$10$VOewjLxpFub4SeAk1vtbK.")
         if (validateForm()) {
+
             const val = await addDoc(collection(db, "shg"), {
                 username: username,
                 email: email,
+                password: hashedPassword,
                 phoneNo: phoneNo,
                 accno: accno,
                 aadhar: aadhar,

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import '../App.css'
-import { collection,getDocs,doc } from 'firebase/firestore';
+import { collection,getDocs,addDoc } from 'firebase/firestore';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -9,12 +9,24 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import { Typography } from '@mui/material';
 import Button from '@mui/material/Button';
-import {db} from '../firebase.config';
+import { Navigate } from "react-router-dom";
+import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import {db,app,storage} from '../firebase.config';
 
 const Details = () => {
   const [fields,setFields] = useState([])
+  const [open,setOpen] = useState(false)
+  const [progress, setProgress] = useState(0);
+  const [filename,setFilename] = useState("")
+  const [redirect, setRedirect] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       let fieldValues=[]
@@ -58,6 +70,76 @@ const Details = () => {
     },
   }));
 
+  const handleFile = e => {
+    e.preventDefault()
+    const file = e.target.files[0]
+    console.log(file)
+
+    uploadFiles(file)
+    // const storageRef = app.storage().ref()
+    // const fileRef = storageRef.child(file.name)
+
+    // fileRef.put(file).then(() => {
+    //     console.log("uploaded file", file.name)
+    // })
+}
+
+const uploadFiles = file => {
+    if(!file)
+    return
+
+    const storageRef = ref(storage, `userVerify/${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on(
+    "state_changed",
+    (snapshot) => {
+        const prog = Math.round(
+        (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        );
+        setProgress(prog);
+    },
+    (error) => console.log(error),
+    () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+        setFilename(downloadURL)
+        console.log("File available at", downloadURL);
+        });
+    }
+    );
+}
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    // const salt = bcrypt.genSaltSync(10)
+    // console.log("salt",salt)
+    if(filename === "") {
+      alert("Bank Verification document not uploaded")
+    } 
+    else {
+        const val = await addDoc(collection(db, "member"), {
+            username: "username",
+            email: "email",
+            phoneNo: 7412589204,
+            aadhar: "7412589631",
+            aadhar_doc: filename,
+        });
+        console.log(val)
+
+        alert("Details submitted successfully")
+        setRedirect(true)
+    }
+};
+
+
   return (
     <div className='Details'>
         {/* <div className="member-border-3"> */}
@@ -97,7 +179,7 @@ const Details = () => {
                   <StyledTableCell align="right">{post.vname}</StyledTableCell>
                   <StyledTableCell align="right">{post.rate}</StyledTableCell>
                   <StyledTableCell align="right">{post.username}</StyledTableCell>
-            <StyledTableCell align="right"><Button variant="outlined" size='small'>Join</Button></StyledTableCell>
+                  <StyledTableCell align="right"><Button variant="outlined" onClick={handleClickOpen} size='small'>Join</Button></StyledTableCell>
             {/* boolean condn. for display */}
                 </StyledTableRow>
                 )
@@ -110,6 +192,28 @@ const Details = () => {
           {/* </div> */}
           {/* </Stack> */}
         </div>
+
+        <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Subscribe</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Upload Aadhar Card for Verification
+          </DialogContentText>
+          <div className="control">
+          <input
+            type="file"
+            name="shg-doc"
+            onChange={handleFile}
+          />
+          <small>Uploading done {progress} %</small>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleSubmit}>Submit</Button>
+        </DialogActions>
+        {redirect===true ? <Navigate to='/' /> : ''}
+      </Dialog>
     </div>
   )
 }
