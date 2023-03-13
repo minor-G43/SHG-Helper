@@ -303,6 +303,8 @@ const Register = () => {
                 interest_rate: rate,
                 village_name: vname,
                 shg_doc: filename,
+                members: [],
+                requests: [],
                 role: "admin",
             });
             console.log(val)
@@ -606,6 +608,7 @@ const Register = () => {
                         <input
                             type="file"
                             name="shg-doc"
+                            accept="application/pdf"
                             onChange={handleFile}
                         />
                         <small>Uploading done {progress} %</small>

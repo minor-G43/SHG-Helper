@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import '../App.css'
-import { collection,getDocs,addDoc, setDoc, doc, getDoc } from 'firebase/firestore';
+import { collection,getDocs,addDoc, setDoc, doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
@@ -27,6 +27,8 @@ const Details = () => {
   const [progress, setProgress] = useState(0);
   const [filename,setFilename] = useState("")
   const [redirect, setRedirect] = useState(false);
+  const [curShg,setCurShg] = useState()
+  const [suc,setSuc] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -110,12 +112,15 @@ const uploadFiles = file => {
     );
 }
 
-  const handleClickOpen = () => {
+  const handleClickOpen = (id) => {
+    setCurShg(id)
     setOpen(true);
   };
 
   const handleClose = () => {
+    setCurShg()
     setOpen(false);
+
   };
 
   const handleSubmit = async (e) => {
@@ -130,17 +135,30 @@ const uploadFiles = file => {
       const docRef = doc(db, "user", email);
       const docSnap = await getDoc(docRef);
       const docData = docSnap.data()
-        const val = await setDoc(doc(db, "member", email), {
-            username: docData.username,
-            email: docData.email,
-            phoneNo: docData.phoneNo,
-            aadhar: docData.aadhar,
-            aadhar_doc: filename,
-        });
-        console.log(val)
-
+      const shgRef = doc(db, "shg", curShg);
+      // const shgSnap = await getDoc(shgRef)
+      await updateDoc(shgRef, {
+        requests: arrayUnion({
+          username: docData.username,
+          email: docData.email,
+          phoneNo: docData.phoneNo,
+          aadhar: docData.aadhar,
+          aadhar_doc: filename
+        })
+      }).then(() => {
+        console.log("Requests updated")
         alert("Details submitted successfully")
         setRedirect(true)
+      })
+      .catch(err => console.log(err))
+        // const val = await setDoc(doc(db, "member", email), {
+            // username: docData.username,
+            // email: docData.email,
+            // phoneNo: docData.phoneNo,
+            // aadhar: docData.aadhar,
+            // aadhar_doc: filename,
+        // });
+        // console.log(val)
     }
 };
 
@@ -184,7 +202,7 @@ const uploadFiles = file => {
                   <StyledTableCell align="right">{post.vname}</StyledTableCell>
                   <StyledTableCell align="right">{post.rate}</StyledTableCell>
                   <StyledTableCell align="right">{post.username}</StyledTableCell>
-                  <StyledTableCell align="right"><Button variant="outlined" onClick={handleClickOpen} size='small'>Join</Button></StyledTableCell>
+                  <StyledTableCell align="right"><Button variant="outlined" onClick={() => handleClickOpen(post.id)} size='small'>Join</Button></StyledTableCell>
             {/* boolean condn. for display */}
                 </StyledTableRow>
                 )
