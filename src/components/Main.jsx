@@ -1,4 +1,4 @@
-import React from 'react'
+import {useEffect, useState} from 'react'
 import '../App.css'
 import { collection,getDocs,doc } from 'firebase/firestore';
 import { styled } from '@mui/material/styles';
@@ -14,7 +14,26 @@ import Button from '@mui/material/Button';
 import {db} from '../firebase.config';
 
 const Main = () => {
+  const [fields,setFields] = useState([])
 
+  useEffect(() => {
+    const fetchData = async () => {
+      let fieldValues=[]
+      const querySnapshot = await getDocs(collection(db,"member"))
+      querySnapshot.forEach(doc => {
+        const val = doc.data()
+        fieldValues.push({
+          id: doc.id,
+          username: val.username,
+          phoneNo: val.phoneNo,
+          aadhar: val.aadhar
+        })
+      })
+      setFields(fieldValues)
+    }
+    fetchData()
+
+  },[fields])
     const StyledTableCell = styled(TableCell)(({ theme }) => ({
         [`&.${tableCellClasses.head}`]: {
           backgroundColor: theme.palette.common.black,
@@ -54,7 +73,7 @@ const Main = () => {
                 </TableRow>
                 </TableHead>
                 <TableBody>
-                <StyledTableRow key='1'>
+                {/* <StyledTableRow key='1'>
                         <StyledTableCell component="th" scope="row">
                         Jenish
                         </StyledTableCell>
@@ -63,30 +82,27 @@ const Main = () => {
                         <StyledTableCell align="right"><span style={{color: 'green'}}>8520</span></StyledTableCell>
                         <StyledTableCell align="right"><span style={{color: 'red'}}>4321</span></StyledTableCell>
                         
-                </StyledTableRow>
-             {/*   {
-                    fields.length === 0 ? (<h3 style={{textAlign: 'center'}}>No SHGs Found!</h3>)
+                </StyledTableRow> */}
+               {
+                    fields.length === 0 ? (<h3 style={{textAlign: 'center'}}>No members Found!</h3>)
                     : (
                     fields.map(post => {
                         return (
                         <StyledTableRow key={post.id}>
                         <StyledTableCell component="th" scope="row">
-                            {post.shg_name}
+                            {post.username}
                         </StyledTableCell>
-                        <StyledTableCell align="right">{post.state}</StyledTableCell>
-                        <StyledTableCell align="right">{post.district}</StyledTableCell>
-                        <StyledTableCell align="right">{post.pname}</StyledTableCell>
-                        <StyledTableCell align="right">{post.vname}</StyledTableCell>
-                        <StyledTableCell align="right">{post.rate}</StyledTableCell>
-                        <StyledTableCell align="right">{post.username}</StyledTableCell>
-                    <StyledTableCell align="right"><Button variant="outlined" size='small'>Join</Button></StyledTableCell>
-                     //boolean condn. for display
+                        <StyledTableCell align="right">{post.phoneNo}</StyledTableCell>
+                        <StyledTableCell align="right">{post.aadhar}</StyledTableCell>
+                        <StyledTableCell align="right"><span style={{color: 'green'}}>8520</span></StyledTableCell>
+                        <StyledTableCell align="right"><span style={{color: 'red'}}>4321</span></StyledTableCell>
+                     {/* boolean condn. for display */}
                         </StyledTableRow>
                         )
                     })
                     )
                 }
-                */}
+               
                 </TableBody>
             </Table>
             </TableContainer>

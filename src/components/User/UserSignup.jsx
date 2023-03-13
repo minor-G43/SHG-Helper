@@ -9,7 +9,7 @@ import {
 } from "firebase/auth";
 import { app, db } from "../../firebase.config";
 import bankData from '../../bankData.json'
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, setDoc ,collection, doc } from "firebase/firestore";
 
 const Signup = () => {
     const auth = getAuth(app);
@@ -242,7 +242,7 @@ const Signup = () => {
                 .then(async (res) => {
                     const user = res.user;
                     console.log(user);
-                    const val = await addDoc(collection(db, "user"), {
+                    const val = await setDoc(doc(db, "user", email), {
                         username: username,
                         email: email,
                         phoneNo: phoneNo,
@@ -450,7 +450,7 @@ const Signup = () => {
                         Sign Up
                     </button>
                 </div>
-                {redirect === true ? <Navigate to="/login" /> : ""}
+                {redirect === true ? <Navigate to="/user-login" /> : ""}
             </div>
         </div>
     );

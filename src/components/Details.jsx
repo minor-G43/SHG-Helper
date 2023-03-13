@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import '../App.css'
-import { collection,getDocs,addDoc } from 'firebase/firestore';
+import { collection,getDocs,addDoc, setDoc, doc, getDoc } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -125,11 +126,15 @@ const uploadFiles = file => {
       alert("Bank Verification document not uploaded")
     } 
     else {
-        const val = await addDoc(collection(db, "member"), {
-            username: "username",
-            email: "email",
-            phoneNo: 7412589204,
-            aadhar: "7412589631",
+      const email = getAuth()?.currentUser?.email
+      const docRef = doc(db, "user", email);
+      const docSnap = await getDoc(docRef);
+      const docData = docSnap.data()
+        const val = await setDoc(doc(db, "member", email), {
+            username: docData.username,
+            email: docData.email,
+            phoneNo: docData.phoneNo,
+            aadhar: docData.aadhar,
             aadhar_doc: filename,
         });
         console.log(val)
@@ -203,6 +208,7 @@ const uploadFiles = file => {
           <input
             type="file"
             name="shg-doc"
+            accept="application/pdf"
             onChange={handleFile}
           />
           <small>Uploading done {progress} %</small>

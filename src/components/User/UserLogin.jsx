@@ -96,7 +96,7 @@ const Login = () => {
 
           <input type='submit' className='button' value='Login' />
         </form>
-        {redirect===true ? <Navigate to='/user' /> : ''}
+        {redirect===true ? <Navigate to='/details' /> : ''}
       </div>
     </div>
   )
