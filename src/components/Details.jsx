@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import '../App.css'
-import { collection,getDocs,addDoc, setDoc, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, setDoc, doc, getDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
@@ -19,19 +19,19 @@ import { Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import { Navigate } from "react-router-dom";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
-import {db,app,storage} from '../firebase.config';
+import { db, app, storage } from '../firebase.config';
 
 const Details = () => {
-  const [fields,setFields] = useState([])
-  const [open,setOpen] = useState(false)
+  const [fields, setFields] = useState([])
+  const [open, setOpen] = useState("")
   const [progress, setProgress] = useState(0);
-  const [filename,setFilename] = useState("")
+  const [filename, setFilename] = useState("")
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      let fieldValues=[]
-      const querySnapshot = await getDocs(collection(db,"shg"))
+      let fieldValues = []
+      const querySnapshot = await getDocs(collection(db, "shg"))
       querySnapshot.forEach(doc => {
         const val = doc.data()
         fieldValues.push({
@@ -49,7 +49,7 @@ const Details = () => {
     }
     fetchData()
 
-  },[fields])
+  }, [fields])
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -60,7 +60,7 @@ const Details = () => {
       fontSize: 14,
     },
   }));
-  
+
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     '&:nth-of-type(odd)': {
       backgroundColor: theme.palette.action.hover,
@@ -83,142 +83,152 @@ const Details = () => {
     // fileRef.put(file).then(() => {
     //     console.log("uploaded file", file.name)
     // })
-}
+  }
 
-const uploadFiles = file => {
-    if(!file)
-    return
+  const uploadFiles = file => {
+    if (!file)
+      return
 
     const storageRef = ref(storage, `userVerify/${file.name}`);
     const uploadTask = uploadBytesResumable(storageRef, file);
 
     uploadTask.on(
-    "state_changed",
-    (snapshot) => {
+      "state_changed",
+      (snapshot) => {
         const prog = Math.round(
-        (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
         );
         setProgress(prog);
-    },
-    (error) => console.log(error),
-    () => {
+      },
+      (error) => console.log(error),
+      () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-        setFilename(downloadURL)
-        console.log("File available at", downloadURL);
+          setFilename(downloadURL)
+          console.log("File available at", downloadURL);
         });
-    }
+      }
     );
-}
+  }
 
-  const handleClickOpen = () => {
-    setOpen(true);
+  const handleClickOpen = (id) => {
+    setOpen(id);
   };
 
   const handleClose = () => {
-    setOpen(false);
+    setOpen("");
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e, id) => {
     e.preventDefault();
     // const salt = bcrypt.genSaltSync(10)
     // console.log("salt",salt)
-    if(filename === "") {
+    if (filename === "") {
       alert("Bank Verification document not uploaded")
-    } 
+    }
     else {
       const email = getAuth()?.currentUser?.email
       const docRef = doc(db, "user", email);
       const docSnap = await getDoc(docRef);
       const docData = docSnap.data()
-        const val = await setDoc(doc(db, "member", email), {
-            username: docData.username,
-            email: docData.email,
-            phoneNo: docData.phoneNo,
-            aadhar: docData.aadhar,
-            aadhar_doc: filename,
-        });
-        console.log(val)
+      const shgRef = doc(db, "shg", id);
+      const shgData = await getDoc(shgRef)
+      console.log(shgData.data());
+      const requests = [...shgData.data().requests]
+      requests.push({
+        username: docData.username,
+        email: docData.email,
+        phoneNo: docData.phoneNo,
+        aadhar: docData.aadhar,
+        aadhar_doc: filename,
+      });
+      console.log({
+        ...shgData.data(), requests: requests
+      });
+      const val = await setDoc(doc(db, "shg", id), {
+        ...shgData.data(), requests: requests
+      });
+      console.log(val)
 
-        alert("Details submitted successfully")
-        setRedirect(true)
+      alert("Details submitted successfully")
+      setRedirect(true)
     }
-};
+  };
 
 
   return (
     <div className='Details'>
-        {/* <div className="member-border-3"> */}
-            {/* <Stack direction='column' spacing={2}> */}
-          <div className="member-border-4">
-          <div className="reg-head">
-            <Typography variant='h4'>Register in an SHG today and avail the benefits online on mobile!</Typography>
+      {/* <div className="member-border-3"> */}
+      {/* <Stack direction='column' spacing={2}> */}
+      <div className="member-border-4">
+        <div className="reg-head">
+          <Typography variant='h4'>Register in an SHG today and avail the benefits online on mobile!</Typography>
         </div>
         <br />
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 800 }} style={{width: 1100}} aria-label="customized table">
-        <TableHead>
-          <TableRow>
-            <StyledTableCell>Registered SHGs</StyledTableCell>
-            <StyledTableCell align="right">State</StyledTableCell>
-            <StyledTableCell align="right">District</StyledTableCell>
-            <StyledTableCell align="right">Panchayat Name</StyledTableCell>
-            <StyledTableCell align="right">Village Name</StyledTableCell>
-            <StyledTableCell align="right">Interest Rate</StyledTableCell>
-            <StyledTableCell align="right">SHG President</StyledTableCell>
-            <StyledTableCell align="right">SHG Join</StyledTableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {
-            fields.length === 0 ? (<h3 style={{textAlign: 'center'}}>No SHGs Found!</h3>)
-            : (
-              fields.map(post => {
-                return (
-                  <StyledTableRow key={post.id}>
-                  <StyledTableCell component="th" scope="row">
-                    {post.shg_name}
-                  </StyledTableCell>
-                  <StyledTableCell align="right">{post.state}</StyledTableCell>
-                  <StyledTableCell align="right">{post.district}</StyledTableCell>
-                  <StyledTableCell align="right">{post.pname}</StyledTableCell>
-                  <StyledTableCell align="right">{post.vname}</StyledTableCell>
-                  <StyledTableCell align="right">{post.rate}</StyledTableCell>
-                  <StyledTableCell align="right">{post.username}</StyledTableCell>
-                  <StyledTableCell align="right"><Button variant="outlined" onClick={handleClickOpen} size='small'>Join</Button></StyledTableCell>
-            {/* boolean condn. for display */}
-                </StyledTableRow>
-                )
-              })
-            )
-          }
-        </TableBody>
-      </Table>
-    </TableContainer>
-          {/* </div> */}
-          {/* </Stack> */}
-        </div>
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 800 }} style={{ width: 1100 }} aria-label="customized table">
+            <TableHead>
+              <TableRow>
+                <StyledTableCell>Registered SHGs</StyledTableCell>
+                <StyledTableCell align="right">State</StyledTableCell>
+                <StyledTableCell align="right">District</StyledTableCell>
+                <StyledTableCell align="right">Panchayat Name</StyledTableCell>
+                <StyledTableCell align="right">Village Name</StyledTableCell>
+                <StyledTableCell align="right">Interest Rate</StyledTableCell>
+                <StyledTableCell align="right">SHG President</StyledTableCell>
+                <StyledTableCell align="right">SHG Join</StyledTableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {
+                fields.length === 0 ? (<h3 style={{ textAlign: 'center' }}>No SHGs Found!</h3>)
+                  : (
+                    fields.map(post => {
+                      return (
+                        <StyledTableRow key={post.id}>
+                          <StyledTableCell component="th" scope="row">
+                            {post.shg_name}
+                          </StyledTableCell>
+                          <StyledTableCell align="right">{post.state}</StyledTableCell>
+                          <StyledTableCell align="right">{post.district}</StyledTableCell>
+                          <StyledTableCell align="right">{post.pname}</StyledTableCell>
+                          <StyledTableCell align="right">{post.vname}</StyledTableCell>
+                          <StyledTableCell align="right">{post.rate}</StyledTableCell>
+                          <StyledTableCell align="right">{post.username}</StyledTableCell>
+                          <StyledTableCell align="right"><Button variant="outlined" onClick={() => { handleClickOpen(post.id) }} size='small'>Join</Button></StyledTableCell>
+                          {/* boolean condn. for display */}
+                        </StyledTableRow>
+                      )
+                    })
+                  )
+              }
+            </TableBody>
+          </Table>
+        </TableContainer>
+        {/* </div> */}
+        {/* </Stack> */}
+      </div>
 
-        <Dialog open={open} onClose={handleClose}>
+      <Dialog open={open.length > 0 ? true : false} onClose={handleClose}>
         <DialogTitle>Subscribe</DialogTitle>
         <DialogContent>
           <DialogContentText>
             Upload Aadhar Card for Verification
           </DialogContentText>
           <div className="control">
-          <input
-            type="file"
-            name="shg-doc"
-            accept="application/pdf"
-            onChange={handleFile}
-          />
-          <small>Uploading done {progress} %</small>
+            <input
+              type="file"
+              name="shg-doc"
+              accept="application/pdf"
+              onChange={handleFile}
+            />
+            <small>Uploading done {progress} %</small>
           </div>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSubmit}>Submit</Button>
+          <Button onClick={(e) => { handleSubmit(e, open) }}>Submit</Button>
         </DialogActions>
-        {redirect===true ? <Navigate to='/' /> : ''}
+        {redirect === true ? <Navigate to='/' /> : ''}
       </Dialog>
     </div>
   )
