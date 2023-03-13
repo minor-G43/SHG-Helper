@@ -15,7 +15,8 @@
 .Details,
 .Register,
 .Details,
-.Main {
+.Main,
+.Requests {
     background-color: #8ec5fc;
     background: linear-gradient(rgba(253, 161, 114, 0.4), rgba(253, 161, 114, 0.4)), url("shg-pic.jpeg") center/cover no-repeat fixed;
     /* background-image: linear-gradient(62deg, #8ec5fc 0%, #e0c3fc 100%); */

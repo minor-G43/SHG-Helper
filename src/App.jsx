@@ -8,6 +8,7 @@ import Details from "./components/Details";
 import AdminSignup from "./components/Admin/AdminSignup";
 import Main from "./components/Main";
 import Admin from './components/Admin/Admin'
+import Requests from "./components/Admin/Requests";
 import "./App.css";
 
 
@@ -20,6 +21,7 @@ function App() {
                     <Route path="/user-signup" element={<UserSignup />} />
                     <Route path="/user-login" element={<UserLogin />} />
                     <Route path="/admin-login" element={<AdminLogin />} />
+                    <Route path="/requests" element={<Requests />} />
                     <Route path="/admin" element={<Admin />} />
                     <Route path="/user" element={<User />} />
                     <Route path="/details" element={<Details />}></Route>
