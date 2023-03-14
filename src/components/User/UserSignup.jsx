@@ -249,6 +249,7 @@ const Signup = () => {
                         accno: accno,
                         aadhar: aadhar,
                         ifsc: ifsc,
+                        isMember: false,
                         role: "user"
                     });
                     console.log(val);

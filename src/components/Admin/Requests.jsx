@@ -82,7 +82,13 @@ const Requests = () => {
 
       const handleAccept = async () => {
         const reqRef = doc(db, "shg",id)
+        const userRef = doc(db,"user",details.email)
 
+        await updateDoc(userRef, {
+          isMember: true
+        }).then(userRef => console.log("isMember changed"))
+        .catch(err => console.log(err))
+        
         await updateDoc(reqRef, {
           members: arrayUnion({
             username: details.username,

@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { Link, Navigate } from 'react-router-dom'
-import { auth } from '../../firebase.config'
+import { auth, db } from '../../firebase.config'
+import { doc, getDoc } from 'firebase/firestore'
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -9,6 +11,7 @@ const Login = () => {
   const [errEmail, setErrEmail] = useState('');
   const [errPassword, setErrPassword] = useState('');
   const [redirect, setRedirect] = useState(false)
+  const navigate = useNavigate()
 
   const validateForm = () => {
     let validity = true
@@ -45,14 +48,25 @@ const Login = () => {
     e.preventDefault()
 
     if (validateForm()) {
-
+      const userRef = doc(db,"user",email)
+      const userSnap = await getDoc(userRef)
+      const userData = userSnap.data()
+      console.log("user",userSnap)
       signInWithEmailAndPassword(auth, email, password)
         .then(async (res) => {
           console.log(res)
           localStorage.setItem("email", res.user.email)
           localStorage.removeItem("isAdmin")
-          alert('Logged in Successfully!')
-          setRedirect(true)
+
+          if(userData?.isMember===true) {
+            alert('Logged in Successfully!')
+            navigate('/shg-list')
+          }
+          else {
+            alert('Logged in Successfully!')
+            setRedirect(true)
+
+          }
         })
         .catch(err => alert(err))
     }
