@@ -15,7 +15,7 @@ import { db } from '../firebase.config';
 
 const Main = () => {
   const userEmail = localStorage?.getItem("email")
-
+  const isAdmin = localStorage?.getItem("isAdmin")
   const [fields, setFields] = useState([])
   const [name, setName] = useState()
   const [id, setId] = useState()
@@ -78,8 +78,12 @@ const Main = () => {
     <div className='Main'>
       <div className="member-border-4">
         <div className="main-head">
+        {isAdmin ? (<div className='main-2'>
+            <Button href='/requests' variant='contained' size='medium'>View Requests</Button>
+          </div>) : ''
+          }
           <div className='main-2'>SHG: {name}</div>
-          <div className='main-1'>Collected: 74235<span style={{ fontWeight: 'bolder' }}>↑</span></div>
+          <div className='main-1'>Collected: 74235<span style={{ fontWeight: 'bolder' }}>↑</span></div>          
         </div>
         <br />
         <TableContainer component={Paper}>

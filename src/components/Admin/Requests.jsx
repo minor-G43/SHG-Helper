@@ -88,7 +88,7 @@ const Requests = () => {
           isMember: true
         }).then(userRef => console.log("isMember changed"))
         .catch(err => console.log(err))
-        
+
         await updateDoc(reqRef, {
           members: arrayUnion({
             username: details.username,
@@ -132,9 +132,14 @@ const Requests = () => {
   return (
     <div className='Requests'>
         <div className="member-border-4">
-          <div className="reg-head">
-            <Typography variant='h4'>Requests for Verification</Typography>
+        <div className="main-head">
+          <div className='main-2'><Button href='/shg-list' variant='contained' size='medium'>Go Back</Button></div>
+          <div className='main-2'>User Requests</div> 
+          <div className='main-1'></div>          
         </div>
+          {/* <div className="reg-head">
+            <Typography variant='h4'>User Requests</Typography>
+        </div> */}
         <br />
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 800 }} style={{width: 1100}} aria-label="customized table">
