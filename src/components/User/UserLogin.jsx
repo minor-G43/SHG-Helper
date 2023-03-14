@@ -49,7 +49,7 @@ const Login = () => {
     signInWithEmailAndPassword(auth,email,password)
     .then(async (res) => {
       console.log(res)
-      localStorage.setItem("user_id",res.user.uid)
+      localStorage.setItem("email",res.user.email)
       alert('Logged in Successfully!')
       setRedirect(true)
     })

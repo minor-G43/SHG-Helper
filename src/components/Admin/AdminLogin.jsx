@@ -52,6 +52,7 @@ const Login = () => {
       console.log(res)
       // localStorage.setItem("user_id",res.user.uid)
       localStorage.setItem("email",res.user.email)
+      localStorage.setItem("isAdmin",true)
       alert('Logged in Successfully!')
       setRedirect(true)
     })

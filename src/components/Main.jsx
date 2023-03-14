@@ -14,26 +14,48 @@ import Button from '@mui/material/Button';
 import {db} from '../firebase.config';
 
 const Main = () => {
+  const userEmail=localStorage?.getItem("email")
+  
   const [fields,setFields] = useState([])
+  const [name,setName] = useState()
+  const [id,setId] = useState()
 
-  useEffect(() => {
-    const fetchData = async () => {
-      let fieldValues=[]
-      const querySnapshot = await getDocs(collection(db,"member"))
-      querySnapshot.forEach(doc => {
-        const val = doc.data()
-        fieldValues.push({
-          id: doc.id,
-          username: val.username,
-          phoneNo: val.phoneNo,
-          aadhar: val.aadhar
+  const fetchData = async () => {
+      const docRef = collection(db,"shg")
+      const docSnap = await getDocs(docRef)
+      console.log(localStorage.getItem("isAdmin")===null)
+      if(localStorage.getItem("isAdmin")===null) {
+        let obj = false
+        docSnap.forEach(doc => {
+            doc?.data()?.members.forEach(mem => {
+              if(mem?.email === userEmail && !obj)
+                setId(doc?.id)
+                setFields(doc?.data()?.members)
+              setName(doc?.data()?.shg_name)
+                obj=true
+            })
+            if(obj) {
+              // console.log()
+              
+            }
         })
+  
+        console.log("fels",fields)
+      }
+      else {
+        docSnap.forEach(doc => {
+          if(doc?.data()?.email===userEmail)            
+            setFields(doc?.data()?.members)
+            setName(doc?.data()?.shg_name)
+          
       })
-      setFields(fieldValues)
-    }
-    fetchData()
+      }
 
-  },[fields])
+  }
+  useEffect(() =>{
+    fetchData()
+  },[])
+
     const StyledTableCell = styled(TableCell)(({ theme }) => ({
         [`&.${tableCellClasses.head}`]: {
           backgroundColor: theme.palette.common.black,
@@ -57,7 +79,7 @@ const Main = () => {
     <div className='Main'>
         <div className="member-border-4">
           <div className="main-head">
-            <div className='main-2'>SHG: Bandh</div>
+            <div className='main-2'>SHG: {name}</div>
             <div className='main-1'>Collected: 74235<span style={{fontWeight: 'bolder'}}>↑</span></div>
             </div>
             <br />
@@ -88,7 +110,7 @@ const Main = () => {
                     : (
                     fields.map(post => {
                         return (
-                        <StyledTableRow key={post.id}>
+                        <StyledTableRow key={post.email}>
                         <StyledTableCell component="th" scope="row">
                             {post.username}
                         </StyledTableCell>
