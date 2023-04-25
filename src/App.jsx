@@ -9,6 +9,7 @@ import AdminSignup from "./components/Admin/AdminSignup";
 import Main from "./components/Main";
 import Admin from './components/Admin/Admin'
 import Requests from "./components/Admin/Requests";
+import Chat from "./components/Chat";
 import "./App.css";
 
 
@@ -27,6 +28,7 @@ function App() {
                     <Route path="/details" element={<Details />}></Route>
                     <Route path="/admin-signup" element={<AdminSignup />}></Route>
                     <Route path="/shg-list" element={<Main />}></Route>
+                    <Route path="/chat" element={<Chat />}></Route>
                 </Routes>
             </Router>
         </div>
