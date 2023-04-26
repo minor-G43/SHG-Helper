@@ -11,6 +11,8 @@ import Admin from './components/Admin/Admin'
 import Requests from "./components/Admin/Requests";
 import Chat from "./components/Chat";
 import "./App.css";
+import UserDetails from "./components/User/userDetails";
+import TransactionsList from "./components/transactions/viewTransactions";
 
 
 function App() {
@@ -19,6 +21,7 @@ function App() {
             <Router>
                 <Routes>
                     <Route path="/" element={<Home />} />
+                    <Route path="/trans-history" element={<TransactionsList />}></Route>
                     <Route path="/user-signup" element={<UserSignup />} />
                     <Route path="/user-login" element={<UserLogin />} />
                     <Route path="/admin-login" element={<AdminLogin />} />
@@ -28,6 +31,7 @@ function App() {
                     <Route path="/details" element={<Details />}></Route>
                     <Route path="/admin-signup" element={<AdminSignup />}></Route>
                     <Route path="/shg-list" element={<Main />}></Route>
+                    <Route path="/user-details" element={<UserDetails />}></Route>
                     <Route path="/chat" element={<Chat />}></Route>
                 </Routes>
             </Router>

@@ -8,7 +8,7 @@ import {
     getAuth,
 } from "firebase/auth";
 import { app, db } from "../../firebase.config";
-import bankData from '../../bankData.json'
+import bankData from '../../bankData.js'
 import { addDoc, setDoc ,collection, doc } from "firebase/firestore";
 
 const Signup = () => {
