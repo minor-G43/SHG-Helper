@@ -64,7 +64,7 @@ const Login = () => {
           }
           else {
             alert('Logged in Successfully!')
-            setRedirect(true)
+            // setRedirect(true)
 
           }
         })

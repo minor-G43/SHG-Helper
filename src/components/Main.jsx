@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import '../App.css'
-import { collection, getDocs, doc } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -12,27 +12,69 @@ import Paper from '@mui/material/Paper';
 import { Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import { db } from '../firebase.config';
-
+import data from '../bankData.js'
+import { Navigate } from 'react-router-dom';
+import { currentUser } from '../cuurentUser';
 const Main = () => {
   const userEmail = localStorage?.getItem("email")
+  const userAadhar = localStorage?.getItem("aadhar")
   const isAdmin = localStorage?.getItem("isAdmin")
   const [fields, setFields] = useState([])
   const [name, setName] = useState()
+  const [shgBankData, setSHGBankData] = useState({})
   const [id, setId] = useState()
-
+  const [redirect, setRedirect] = useState(false)
+  const [transaction, setTransaction] = useState(false)
+  const [bankData, setBankData] = useState({})
   const fetchData = async () => {
     const docRef = collection(db, "shg")
     const docSnap = await getDocs(docRef)
-    console.log(localStorage.getItem("isAdmin") === null)
     if (localStorage.getItem("isAdmin") === null) {
+      const bankRef = collection(db, "bank-details");
+      const bankSnap = await getDocs(bankRef);
+      var temp = {};
+      bankSnap.forEach(e => {
+        temp[e.data().aadhar] = e.data()
+      })
+      setBankData(temp);
+    }
+    else {
+      const bankCollection = collection(db, "bank-details")
+      const docs = await getDocs(bankCollection)
+      const tempBankData = {}
+      docs.forEach(e => {
+        tempBankData[e.data().aadhar] = e.data()
+      });
+      const temp = {}
+      fields.forEach(e => {
+        console.log(tempBankData[e.aadhar]);
+        temp[e.aadhar] = tempBankData[e.aadhar]
+      })
+      setFields([...fields])
+      setBankData(temp)
+    }
+    if (localStorage.getItem("isAdmin") === null) {
+      const shgRef = doc(db, "bank-details", localStorage.getItem("shgAadhar"))
+      const shgSnap = await getDoc(shgRef)
+      console.log(shgSnap.data());
+      setSHGBankData(shgSnap.data())
       let obj = false
+      const userRef = collection(db, "user");
       docSnap.forEach(doc => {
         for (let i = 0; i < doc?.data()?.members.length; i++) {
           if (doc?.data()?.members[i]?.email === userEmail) {
             setId(doc?.id)
-            console.log(...doc?.data()?.members);
+            doc?.data()?.members.forEach(e => {
+              if (e.email === localStorage.getItem("email")) {
+                console.log(e);
+                return Object.assign(currentUser, e);
+              }
+            })
             setFields([...doc?.data()?.members])
+            console.log(doc?.data());
             setName(doc?.data()?.shg_name)
+            localStorage.setItem("shg", doc?.data()?.shg_name)
+            localStorage.setItem("shgAadhar", doc?.data()?.aadhar)
             obj = true
             break;
           }
@@ -43,13 +85,12 @@ const Main = () => {
     }
     else {
       docSnap.forEach(doc => {
-        if (doc?.data()?.email === userEmail)
+        if (doc?.data()?.email === userEmail) {
           setFields(doc?.data()?.members)
+        }
         setName(doc?.data()?.shg_name)
-
       })
     }
-
   }
   useEffect(() => {
     fetchData()
@@ -76,14 +117,25 @@ const Main = () => {
   }));
   return (
     <div className='Main'>
+      {redirect ? <Navigate to={{
+        pathname: '/user-details',
+        state: { name: { name }, aadhar: { userAadhar } }
+      }} /> : ""}
+      {transaction ? <Navigate to="/trans-history" /> : ""}
       <div className="member-border-4">
         <div className="main-head">
-        {isAdmin ? (<div className='main-2'>
+          {isAdmin ? (<div className='main-2'>
             <Button href='/requests' variant='contained' size='medium'>View Requests</Button>
-          </div>) : ''
+            <Button onClick={() => { setTransaction(true) }} variant='contained' size='medium' style={{ marginLeft: "10px" }}>View Transactions</Button>
+            <Button onClick={() => setRedirect(true)} variant='contained' size='medium' style={{ marginLeft: "10px" }}>View Details</Button>
+
+          </div>) : (<div className='main-2'>
+            <Button onClick={() => setRedirect(true)} variant='contained' size='medium'>View Details</Button>
+            <Button onClick={() => { setTransaction(true) }} variant='contained' size='medium' style={{ marginLeft: "10px" }}>View Transactions</Button>
+          </div>)
           }
           <div className='main-2'>SHG: {name}</div>
-          <div className='main-1'>Collected: 74235<span style={{ fontWeight: 'bolder' }}>↑</span></div>          
+          <div className='main-1'>Collected:{shgBankData.balance} <span style={{ fontWeight: 'bolder' }}>↑</span></div>
         </div>
         <br />
         <TableContainer component={Paper}>
@@ -111,16 +163,16 @@ const Main = () => {
               {
                 fields.length === 0 ? (<h3 style={{ textAlign: 'center' }}>No members Found!</h3>)
                   : (
-                    fields.map(post => {
+                    fields.map((post, i) => {
                       return (
-                        <StyledTableRow key={post.email}>
+                        <StyledTableRow key={i}>
                           <StyledTableCell component="th" scope="row">
                             {post.username}
                           </StyledTableCell>
                           <StyledTableCell align="right">{post.phoneNo}</StyledTableCell>
                           <StyledTableCell align="right">{post.aadhar}</StyledTableCell>
-                          <StyledTableCell align="right"><span style={{ color: 'green' }}>8520</span></StyledTableCell>
-                          <StyledTableCell align="right"><span style={{ color: 'red' }}>4321</span></StyledTableCell>
+                          <StyledTableCell align="right">{bankData[post.aadhar] ? bankData[post.aadhar].amount_contri : ""}</StyledTableCell>
+                          <StyledTableCell align="right">{bankData[post.aadhar] ? bankData[post.aadhar].loan_amt : ""}</StyledTableCell>
                           {/* boolean condn. for display */}
                         </StyledTableRow>
                       )
@@ -134,7 +186,7 @@ const Main = () => {
         {/* </div> */}
         {/* </Stack> */}
       </div>
-    </div>
+    </div >
   )
 }
 

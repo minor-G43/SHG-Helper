@@ -1,6 +1,6 @@
 // import { auth, app, db } from "./firebase.config";
 // import { addDoc, collection } from "firebase/firestore";
-// import data from "./MOCK_DATA (2).json";
+// import data from "./MOCK_DATA (2).js";
 
 // const upload = () => {
 //     data.forEach(async (e) => {

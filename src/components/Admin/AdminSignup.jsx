@@ -8,7 +8,7 @@ import {
     getAuth,
 } from "firebase/auth";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
-import bankData from '../../bankData.json'
+import bankData from '../../bankData.js'
 import '../../App.css'
 import { collection, addDoc } from "firebase/firestore";
 
