@@ -9,7 +9,6 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import { db } from '../firebase.config';
 
@@ -33,11 +32,12 @@ const Main = () => {
             console.log(...doc?.data()?.members);
             setFields([...doc?.data()?.members])
             setName(doc?.data()?.shg_name)
+            localStorage.setItem("shg-name", doc?.data()?.shg_name)
+            localStorage.setItem("cus-name", doc?.data()?.members[i]?.username)
             obj = true
             break;
           }
         }
-
         console.log("fels", fields)
       })
     }
@@ -46,10 +46,11 @@ const Main = () => {
         if (doc?.data()?.email === userEmail)
           setFields(doc?.data()?.members)
         setName(doc?.data()?.shg_name)
+        localStorage.setItem("shg-name", doc?.data()?.shg_name)
+        localStorage.setItem("cus-name", doc?.data()?.username)
 
       })
     }
-
   }
   useEffect(() => {
     fetchData()
