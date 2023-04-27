@@ -73,6 +73,7 @@ const Main = () => {
         if (doc?.data()?.email === userEmail) {
           setFields(doc?.data()?.members)
           setName(doc?.data()?.shg_name)
+          localStorage.setItem("shgAadhar", doc?.data()?.aadhar)
           localStorage.setItem("shg-name", doc?.data()?.shg_name)
           localStorage.setItem("cus-name", doc?.data()?.username)
         }
