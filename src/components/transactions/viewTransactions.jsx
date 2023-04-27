@@ -2,7 +2,7 @@ import { React, useEffect, useState } from "react";
 import { db } from "../../firebase.config";
 import { doc, getDoc } from "firebase/firestore";
 import { Button } from "react-bootstrap";
-import { Table } from "@mui/material";
+import Table from "@mui/material/Table";
 import "../../App.css"
 const TransactionsList = () => {
     const [historyData, setHistoryData] = useState([])
@@ -10,7 +10,7 @@ const TransactionsList = () => {
         const shgAadhar = localStorage.getItem("shgAadhar");
         const historySnap = await getDoc(doc(db, "transaction-history", shgAadhar));
         const data = [];
-        historySnap.data().transacions.forEach(e => {
+        historySnap?.data()?.transactions.forEach(e => {
             data.push(e)
         })
         console.log(data);
@@ -43,12 +43,12 @@ const TransactionsList = () => {
                     <tbody>
                         {historyData.length > 0 ? historyData.map((e, i) => {
                             return (
-                                <tr key={e.timeStamp.seconds}>
+                                <tr key={e.timeStamp}>
                                     <td>{String(i + 1)}</td>
                                     <td>{e.senderName}</td>
                                     <td>{e.receiverName}</td>
                                     <td>{e.amountTransferred}</td>
-                                    <td>{new Date(e.timeStamp.seconds).toISOString()}</td>
+                                    <td>{e.timeStamp}</td>
                                 </tr>
                             );
                         }) : ""}

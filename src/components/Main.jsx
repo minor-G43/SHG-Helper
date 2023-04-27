@@ -35,6 +35,7 @@ const Main = () => {
       bankSnap.forEach(e => {
         temp[e.data().aadhar] = e.data()
       })
+      console.log(temp);
       setBankData(temp);
     }
     else {
@@ -44,22 +45,17 @@ const Main = () => {
       docs.forEach(e => {
         tempBankData[e.data().aadhar] = e.data()
       });
+      console.log(tempBankData);
       const temp = {}
-      fields.forEach(e => {
-        console.log(tempBankData[e.aadhar]);
-        temp[e.aadhar] = tempBankData[e.aadhar]
+      fields?.forEach(e => {
+        temp[e?.aadhar] = tempBankData[e?.aadhar]
       })
-      setFields([...fields])
-      setBankData(temp)
+      console.log(temp);
+      // setFields([...fields])
+      setBankData({...temp})
     }
     if (localStorage.getItem("isAdmin") === null) {
-      const shgRef = doc(db, "bank-details", localStorage.getItem("shgAadhar"))
-      const shgSnap = await getDoc(shgRef)
-      console.log(shgSnap.data());
-      setSHGBankData(shgSnap.data())
-      let obj = false
-      const userRef = collection(db, "user");
-      docSnap.forEach(doc => {
+      docSnap.forEach(async doc => {
         for (let i = 0; i < doc?.data()?.members.length; i++) {
           if (doc?.data()?.members[i]?.email === userEmail) {
             setId(doc?.id)
@@ -76,12 +72,17 @@ const Main = () => {
             localStorage.setItem("shgAadhar", doc?.data()?.aadhar)
             localStorage.setItem("shg-name", doc?.data()?.shg_name)
             localStorage.setItem("cus-name", doc?.data()?.members[i]?.username)
-            obj = true
+            // obj = true
             break;
           }
         }
         console.log("fels", fields)
       })
+      const shgRef = doc(db, "bank-details", localStorage.getItem("shgAadhar"))
+      const shgSnap = await getDoc(shgRef)
+      console.log(shgSnap.data());
+      setSHGBankData(shgSnap.data())
+      const userRef = collection(db, "user");
     }
     else {
       docSnap.forEach(doc => {
@@ -170,12 +171,12 @@ const Main = () => {
                       return (
                         <StyledTableRow key={i}>
                           <StyledTableCell component="th" scope="row">
-                            {post.username}
+                            {post?.username}
                           </StyledTableCell>
-                          <StyledTableCell align="right">{post.phoneNo}</StyledTableCell>
-                          <StyledTableCell align="right">{post.aadhar}</StyledTableCell>
-                          <StyledTableCell align="right">{bankData[post.aadhar] ? bankData[post.aadhar].amount_contri : ""}</StyledTableCell>
-                          <StyledTableCell align="right">{bankData[post.aadhar] ? bankData[post.aadhar].loan_amt : ""}</StyledTableCell>
+                          <StyledTableCell align="right">{post?.phoneNo}</StyledTableCell>
+                          <StyledTableCell align="right">{post?.aadhar}</StyledTableCell>
+                          <StyledTableCell align="right">{bankData[post?.aadhar] ? bankData[post?.aadhar]?.amount_contri : ""}</StyledTableCell>
+                          <StyledTableCell align="right">{bankData[post?.aadhar] ? bankData[post?.aadhar]?.loan_amt : ""}</StyledTableCell>
                           {/* boolean condn. for display */}
                         </StyledTableRow>
                       )
