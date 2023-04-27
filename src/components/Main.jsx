@@ -11,7 +11,6 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import { db } from '../firebase.config';
-import data from '../bankData.js'
 import { Navigate } from 'react-router-dom';
 import { currentUser } from '../cuurentUser';
 const Main = () => {
@@ -39,20 +38,6 @@ const Main = () => {
       setBankData(temp);
     }
     else {
-      const bankCollection = collection(db, "bank-details")
-      const docs = await getDocs(bankCollection)
-      const tempBankData = {}
-      docs.forEach(e => {
-        tempBankData[e.data().aadhar] = e.data()
-      });
-      console.log(tempBankData);
-      const temp = {}
-      fields?.forEach(e => {
-        temp[e?.aadhar] = tempBankData[e?.aadhar]
-      })
-      console.log(temp);
-      // setFields([...fields])
-      setBankData({...temp})
     }
     if (localStorage.getItem("isAdmin") === null) {
       docSnap.forEach(async doc => {
@@ -82,18 +67,30 @@ const Main = () => {
       const shgSnap = await getDoc(shgRef)
       console.log(shgSnap.data());
       setSHGBankData(shgSnap.data())
-      const userRef = collection(db, "user");
     }
     else {
       docSnap.forEach(doc => {
         if (doc?.data()?.email === userEmail) {
           setFields(doc?.data()?.members)
+          setName(doc?.data()?.shg_name)
+          localStorage.setItem("shg-name", doc?.data()?.shg_name)
+          localStorage.setItem("cus-name", doc?.data()?.username)
         }
-        setName(doc?.data()?.shg_name)
-        localStorage.setItem("shg-name", doc?.data()?.shg_name)
-        localStorage.setItem("cus-name", doc?.data()?.username)
-
       })
+      const bankCollection = collection(db, "bank-details")
+      const docs = await getDocs(bankCollection)
+      const tempBankData = {}
+      docs?.forEach(e => {
+        tempBankData[e?.data().aadhar] = e?.data()
+      });
+      console.log(tempBankData);
+      const temp = {}
+      fields?.forEach(e => {
+        temp[e?.aadhar] = tempBankData[e?.aadhar]
+      })
+      console.log(temp);
+      // setFields([...fields])
+      setBankData({ ...temp })
     }
   }
   useEffect(() => {
@@ -169,7 +166,7 @@ const Main = () => {
                   : (
                     fields.map((post, i) => {
                       return (
-                        <StyledTableRow key={i}>
+                        <StyledTableRow key={post.aadhar}>
                           <StyledTableCell component="th" scope="row">
                             {post?.username}
                           </StyledTableCell>
