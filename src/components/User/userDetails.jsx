@@ -15,7 +15,7 @@ const UserDetails = (props) => {
     const [aadhar, setAadhar] = useState(0);
     const getUserBankDetails = async () => {
         try {
-            const userRef = doc(db, "bank-details", currentUser.aadhar);
+            const userRef = doc(db, "bank-details", currentUser?.aadhar);
             const userSnap = await getDoc(userRef);
             console.log(userSnap.data());
             setUserBankData({ ...userSnap.data() })
@@ -26,18 +26,17 @@ const UserDetails = (props) => {
         getSHGBankDetails()
     }
     const getSHGBankDetails = async () => {
-        const docRef = collection(db, "shg")
-        const docSnap = await getDocs(docRef)
-        var fields;
-        docSnap.forEach(doc => {
-            if (doc?.data()?.shg_name === localStorage?.getItem("shg")) {
-                setFields(doc?.data())
-                fields = doc?.data()
-            }
-        })
+        // const docRef = collection(db, "shg")
+        // const docSnap = await getDocs(docRef)
+        // var fields;
+        // docSnap.forEach(doc => {
+        //     if (doc?.data()?.shg_name === localStorage?.getItem("shg-name")) {
+        //         setFields(doc?.data())
+        //         fields = doc?.data()
+        //     }
+        // })
         try {
-            console.log(fields);
-            const userRef = doc(db, "bank-details", fields.aadhar);
+            const userRef = doc(db, "bank-details", localStorage.getItem("shgAadhar"));
             const userSnap = await getDoc(userRef);
             console.log(userSnap.data());
             setSHGBankData({ ...userSnap.data() })
@@ -47,7 +46,7 @@ const UserDetails = (props) => {
         }
     }
     const transferFund = async (userAadhar, shgAadhar, amount) => {
-        await updateDoc(doc(db, "bank-details", userAadhar), { balance: Number(Number(userBankData.balance) - Number(amount)), loan_amt: Number(Number(userBankData.loan_amt) - Number(amount)), amount_contri: Number(Number(userBankData.loan_amt) + Number(amount)) })
+        await updateDoc(doc(db, "bank-details", userAadhar), { balance: Number(Number(userBankData.balance) - Number(amount)), loan_amt: Number(Number(userBankData.loan_amt) - Number(amount)), amount_contri: Number(Number(userBankData.amount_contri) + Number(amount)) })
         console.log(Number(Number(SHGBankData.balance) + Number(amount)));
         await updateDoc(doc(db, "bank-details", shgAadhar), { balance: Number(Number(SHGBankData.balance) + Number(amount)) })
         const collection = {
@@ -58,39 +57,50 @@ const UserDetails = (props) => {
             from: userAadhar,
             to: shgAadhar
         }
-        const data = (await getDoc(doc(db, "transaction-history", shgAadhar))).data()
+        const data = (await getDoc(doc(db, "transaction-history", shgAadhar)))?.data()
         console.log(data);
-        if (data.transacions !== undefined) {
-            data.transacions = [...data.transacions, collection]
+        if (data === undefined) {
+            await setDoc(doc(db, "transaction-history", shgAadhar), {
+                transactions: [collection]
+            })
         }
         else {
-            data.transacions = [collection]
+            data.transactions = [...data.transactions, collection]
+            await updateDoc(doc(db, "transaction-history", shgAadhar), {
+                transactions: [...data.transactions]
+            })
         }
-        await updateDoc(doc(db, "transaction-history", shgAadhar), {
-            transactions: [...data.transacions]
-
-        }
-        )
         return setRedirect(true);
     }
     const transferFundtoUser = async (userAadhar, shgAadhar, amount) => {
+        console.log(userAadhar, shgAadhar, amount);
         await updateDoc(doc(db, "bank-details", shgAadhar), { balance: Number(Number(SHGBankData.balance) - Number(amount)) })
         const userData = (await getDoc(doc(db, "bank-details", userAadhar))).data();
+        const userDetails = (collection(db, "user"));
+        const userDetailsSnap = await getDocs(userDetails)
+        const name = [];
+        userDetailsSnap.forEach(e => {
+            console.log(e.data()?.aadhar === userAadhar);
+            if (e.data()?.aadhar === userAadhar) {
+                name.push(e.data().username)
+            }
+        })
+        console.log(name[0]);
         await updateDoc(doc(db, "bank-details", userAadhar), { balance: Number(Number(userData.balance) + Number(amount)), loan_amt: Number(Number(userData.loan_amt) + Number(amount)) })
-        const collection = {
+        const dataCollection = {
             amountTransferred: amount,
             timeStamp: new Date().toISOString(),
-            receiverName: currentUser.username,
+            receiverName: name[0],
             senderName: localStorage.getItem("shg"),
             to: userAadhar,
             from: shgAadhar
         }
         const data = (await getDoc(doc(db, "transaction-history", shgAadhar))).data()
         if (data.transactions !== undefined) {
-            data.transactions = [...data.transactions, collection]
+            data.transactions = [...data.transactions, dataCollection]
         }
         else {
-            data.transactions = [collection]
+            data.transactions = [dataCollection]
         }
         console.log(data);
         await updateDoc(doc(db, "transaction-history", shgAadhar), data)
@@ -105,7 +115,10 @@ const UserDetails = (props) => {
     //     })
     // }
     useEffect(() => {
-        getUserBankDetails()
+        if (localStorage.getItem("isAdmin") === null)
+            getUserBankDetails()
+        else
+            getSHGBankDetails()
         // insert()
     }, [])
 
@@ -123,7 +136,7 @@ const UserDetails = (props) => {
                 <Card>
                     <Card.Body style={{ padding: "20px" }}>
                         <Row style={{ display: "flex", justifyContent: "space-evenly" }}>
-                            {localStorage.getItem("isAdmin") !== "true" ? <><Col sm="6" style={{ display: "flex", flexDirection: "column" }}>
+                            {localStorage.getItem("isAdmin") === null ? <><Col sm="6" style={{ display: "flex", flexDirection: "column" }}>
                                 <h1>General Details</h1>
                                 <div style={{ marginTop: "10px", display: "flex", flexDirection: "column", height: "200px", justifyContent: "space-between" }}>
                                     <span>Name : {currentUser.username}</span>
@@ -149,7 +162,7 @@ const UserDetails = (props) => {
                                                 setAmount(Number(e.target.value))
                                                 console.log(typeof (amount), amount);
                                             }} />
-                                            <Button variant="info" disabled={amount === 0} onClick={() => { transferFund(currentUser.aadhar, fields.aadhar, amount) }} style={{ padding: "5px 10px", marginLeft: "10px" }}>Transfer</Button>
+                                            <Button variant="info" disabled={amount === 0} onClick={() => { transferFund(currentUser?.aadhar, localStorage.getItem("shgAadhar"), amount) }} style={{ padding: "5px 10px", marginLeft: "10px" }}>Transfer</Button>
                                         </Row>
                                         <Row>
                                             SHG Balance : {SHGBankData.balance}
@@ -177,7 +190,7 @@ const UserDetails = (props) => {
                                             <Form.Control type='number' min={0} onChange={(e) => {
                                                 setAmount(Number(e.target.value))
                                             }} />
-                                            <Button variant="info" disabled={amount === 0} onClick={() => { transferFundtoUser(aadhar, fields.aadhar, amount) }} style={{ padding: "5px 10px", marginLeft: "10px" }}>Transfer</Button>
+                                            <Button variant="info" disabled={amount === 0} onClick={() => { transferFundtoUser(aadhar, localStorage.getItem("shgAadhar"), amount) }} style={{ padding: "5px 10px", marginLeft: "10px" }}>Transfer</Button>
                                         </Row>
                                     </div>
                                 </Col>

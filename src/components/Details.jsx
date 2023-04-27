@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import '../App.css'
-import { collection,getDocs,addDoc, setDoc, doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
+import { collection,getDocs, doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
@@ -19,7 +19,7 @@ import { Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import { Navigate } from "react-router-dom";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
-import {db,app,storage} from '../firebase.config';
+import {db,storage} from '../firebase.config';
 
 const Details = () => {
   const [fields,setFields] = useState([])

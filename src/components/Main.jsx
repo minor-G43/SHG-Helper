@@ -11,7 +11,6 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import { db } from '../firebase.config';
-import data from '../bankData.js'
 import { Navigate } from 'react-router-dom';
 import { currentUser } from '../cuurentUser';
 const Main = () => {
@@ -25,6 +24,7 @@ const Main = () => {
   const [redirect, setRedirect] = useState(false)
   const [transaction, setTransaction] = useState(false)
   const [bankData, setBankData] = useState({})
+
   const fetchData = async () => {
     const docRef = collection(db, "shg")
     const docSnap = await getDocs(docRef)
@@ -35,31 +35,13 @@ const Main = () => {
       bankSnap.forEach(e => {
         temp[e.data().aadhar] = e.data()
       })
+      console.log(temp);
       setBankData(temp);
     }
     else {
-      const bankCollection = collection(db, "bank-details")
-      const docs = await getDocs(bankCollection)
-      const tempBankData = {}
-      docs.forEach(e => {
-        tempBankData[e.data().aadhar] = e.data()
-      });
-      const temp = {}
-      fields.forEach(e => {
-        console.log(tempBankData[e.aadhar]);
-        temp[e.aadhar] = tempBankData[e.aadhar]
-      })
-      setFields([...fields])
-      setBankData(temp)
     }
     if (localStorage.getItem("isAdmin") === null) {
-      const shgRef = doc(db, "bank-details", localStorage.getItem("shgAadhar"))
-      const shgSnap = await getDoc(shgRef)
-      console.log(shgSnap.data());
-      setSHGBankData(shgSnap.data())
-      let obj = false
-      const userRef = collection(db, "user");
-      docSnap.forEach(doc => {
+      docSnap.forEach(async doc => {
         for (let i = 0; i < doc?.data()?.members.length; i++) {
           if (doc?.data()?.members[i]?.email === userEmail) {
             setId(doc?.id)
@@ -76,28 +58,46 @@ const Main = () => {
             localStorage.setItem("shgAadhar", doc?.data()?.aadhar)
             localStorage.setItem("shg-name", doc?.data()?.shg_name)
             localStorage.setItem("cus-name", doc?.data()?.members[i]?.username)
-            obj = true
+            // obj = true
             break;
           }
         }
         console.log("fels", fields)
       })
+      const shgRef = doc(db, "bank-details", localStorage.getItem("shgAadhar"))
+      const shgSnap = await getDoc(shgRef)
+      console.log(shgSnap.data());
+      setSHGBankData(shgSnap.data())
     }
     else {
       docSnap.forEach(doc => {
         if (doc?.data()?.email === userEmail) {
           setFields(doc?.data()?.members)
+          setName(doc?.data()?.shg_name)
+          localStorage.setItem("shgAadhar", doc?.data()?.aadhar)
+          localStorage.setItem("shg-name", doc?.data()?.shg_name)
+          localStorage.setItem("cus-name", doc?.data()?.username)
         }
-        setName(doc?.data()?.shg_name)
-        localStorage.setItem("shg-name", doc?.data()?.shg_name)
-        localStorage.setItem("cus-name", doc?.data()?.username)
-
       })
+      const bankCollection = collection(db, "bank-details")
+      const docs = await getDocs(bankCollection)
+      const tempBankData = {}
+      docs?.forEach(e => {
+        tempBankData[e?.data().aadhar] = e?.data()
+      });
+      console.log(tempBankData);
+      const temp = {}
+      fields?.forEach(e => {
+        temp[e?.aadhar] = tempBankData[e?.aadhar]
+      })
+      console.log(temp);
+      // setFields([...fields])
+      setBankData({ ...temp })
     }
   }
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [bankData, fields])
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -138,7 +138,7 @@ const Main = () => {
           </div>)
           }
           <div className='main-2'>SHG: {name}</div>
-          <div className='main-1'>Collected:{shgBankData.balance} <span style={{ fontWeight: 'bolder' }}>↑</span></div>
+          <div className='main-1'>Collected:{shgBankData?.balance} <span style={{ fontWeight: 'bolder' }}>↑</span></div>
         </div>
         <br />
         <TableContainer component={Paper}>
@@ -168,14 +168,14 @@ const Main = () => {
                   : (
                     fields.map((post, i) => {
                       return (
-                        <StyledTableRow key={i}>
+                        <StyledTableRow key={post.aadhar}>
                           <StyledTableCell component="th" scope="row">
-                            {post.username}
+                            {post?.username}
                           </StyledTableCell>
-                          <StyledTableCell align="right">{post.phoneNo}</StyledTableCell>
-                          <StyledTableCell align="right">{post.aadhar}</StyledTableCell>
-                          <StyledTableCell align="right">{bankData[post.aadhar] ? bankData[post.aadhar].amount_contri : ""}</StyledTableCell>
-                          <StyledTableCell align="right">{bankData[post.aadhar] ? bankData[post.aadhar].loan_amt : ""}</StyledTableCell>
+                          <StyledTableCell align="right">{post?.phoneNo}</StyledTableCell>
+                          <StyledTableCell align="right">{post?.aadhar}</StyledTableCell>
+                          <StyledTableCell align="right">{bankData[post?.aadhar] ? bankData[post?.aadhar]?.amount_contri : ""}</StyledTableCell>
+                          <StyledTableCell align="right">{bankData[post?.aadhar] ? bankData[post?.aadhar]?.loan_amt : ""}</StyledTableCell>
                           {/* boolean condn. for display */}
                         </StyledTableRow>
                       )

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { Link, Navigate } from 'react-router-dom'
 import { auth, db } from '../../firebase.config'
-import { doc, getDoc } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs } from 'firebase/firestore'
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -56,6 +56,12 @@ const Login = () => {
         .then(async (res) => {
           console.log(res)
           localStorage.setItem("email", res.user.email)
+          const shgData = await getDocs(collection(db , "shg"));
+          // shgData.forEach(e=>{
+          //   if(e.shg_name === res.user.)
+          // })
+          // localStorage.setItem("shgAadhar", res.user.email)
+
           localStorage.removeItem("isAdmin")
 
           if(userData?.isMember===true) {
@@ -64,7 +70,7 @@ const Login = () => {
           }
           else {
             alert('Logged in Successfully!')
-            // setRedirect(true)
+            setRedirect(true)
 
           }
         })
