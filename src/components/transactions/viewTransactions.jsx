@@ -1,8 +1,16 @@
 import { React, useEffect, useState } from "react";
 import { db } from "../../firebase.config";
 import { doc, getDoc } from "firebase/firestore";
-import { Button } from "react-bootstrap";
+import { Button } from "@mui/material";
 import Table from "@mui/material/Table";
+import { styled } from '@mui/material/styles';
+import TableBody from '@mui/material/TableBody';
+import TableCell, { tableCellClasses } from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import moment from "moment/moment";
 import "../../App.css"
 const TransactionsList = () => {
     const [historyData, setHistoryData] = useState([])
@@ -19,18 +27,73 @@ const TransactionsList = () => {
     useEffect(() => {
         fetchData();
     }, [])
+
+    const StyledTableCell = styled(TableCell)(({ theme }) => ({
+        [`&.${tableCellClasses.head}`]: {
+          backgroundColor: theme.palette.common.black,
+          color: theme.palette.common.white,
+        },
+        [`&.${tableCellClasses.body}`]: {
+          fontSize: 14,
+        },
+      }));
+      
+      const StyledTableRow = styled(TableRow)(({ theme }) => ({
+        '&:nth-of-type(odd)': {
+          backgroundColor: theme.palette.action.hover,
+        },
+        // hide last border
+        '&:last-child td, &:last-child th': {
+          border: 0,
+        },
+      }));
+
+
     return (
         <div className="Requests">
             <div className="member-border-4">
                 <div className="main-head">
-                    <Button href="/shg-list" variant="info">
-                        Go Back
-                    </Button>
+                <Button href='/shg-list' variant='contained' size='medium'>Go Back</Button>
                     <div className="main-2">Transaction Details</div>
                     <div className="main-1"></div>
                 </div>
                 <br />
-                <Table>
+
+                <TableContainer component={Paper}>
+      <Table sx={{ minWidth: 800 }} style={{width: 1100}} aria-label="customized table">
+        <TableHead>
+          <TableRow>
+            <StyledTableCell>S. No.</StyledTableCell>
+            <StyledTableCell align="right">Sender</StyledTableCell>
+            <StyledTableCell align="right">Receiver</StyledTableCell>
+            <StyledTableCell align="right">Amount</StyledTableCell>
+            <StyledTableCell align="right">TimeStamp</StyledTableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {
+            historyData.length === 0 ? (<h3 style={{textAlign: 'center'}}>No Transactions  Found!</h3>)
+            : (
+                 historyData.map((e, i) => {
+                return (
+                  <StyledTableRow key={e.timeStamp}>
+                  <StyledTableCell component="th" scope="row">
+                    {String(i + 1)}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">{e.senderName}</StyledTableCell>
+                  <StyledTableCell align="right">{e.receiverName}</StyledTableCell>
+                  <StyledTableCell align="right">{e.amountTransferred}</StyledTableCell>
+                  <StyledTableCell align="right">{moment(e.timeStamp).format("DD/MM/YYYY, hh:mm")}</StyledTableCell>
+            {/* boolean condn. for display */}
+                </StyledTableRow>
+                )
+              })
+            )
+          }
+        </TableBody>
+      </Table>
+    </TableContainer>
+                {/* <Table>
                     <thead>
                         <th>
                             <td>S.No</td>
@@ -53,7 +116,7 @@ const TransactionsList = () => {
                             );
                         }) : ""}
                     </tbody>
-                </Table>
+                </Table> */}
             </div>
         </div>
     );

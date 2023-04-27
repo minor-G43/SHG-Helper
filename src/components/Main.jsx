@@ -24,6 +24,7 @@ const Main = () => {
   const [redirect, setRedirect] = useState(false)
   const [transaction, setTransaction] = useState(false)
   const [bankData, setBankData] = useState({})
+
   const fetchData = async () => {
     const docRef = collection(db, "shg")
     const docSnap = await getDocs(docRef)
@@ -96,7 +97,7 @@ const Main = () => {
   }
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [bankData, fields])
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -137,7 +138,7 @@ const Main = () => {
           </div>)
           }
           <div className='main-2'>SHG: {name}</div>
-          <div className='main-1'>Collected:{shgBankData.balance} <span style={{ fontWeight: 'bolder' }}>↑</span></div>
+          <div className='main-1'>Collected:{shgBankData?.balance} <span style={{ fontWeight: 'bolder' }}>↑</span></div>
         </div>
         <br />
         <TableContainer component={Paper}>
