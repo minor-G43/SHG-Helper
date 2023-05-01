@@ -8,6 +8,11 @@ import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import Box from "@mui/material/Box";
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import { db } from '../firebase.config';
@@ -120,22 +125,57 @@ const Main = () => {
   }));
   return (
     <div className='Main'>
-      {redirect ? <Navigate to={{
+      {/* {redirect ? <Navigate to={{
         pathname: '/user-details',
         state: { name: { name }, aadhar: { userAadhar } }
       }} /> : ""}
-      {transaction ? <Navigate to="/trans-history" /> : ""}
+      {transaction ? <Navigate to="/trans-history" /> : ""} */}
       <div className="member-border-4">
         <div className="main-head">
-          {isAdmin ? (<div className='main-2'>
-            <Button href='/requests' variant='contained' size='medium'>View Requests</Button>
-            <Button onClick={() => { setTransaction(true) }} variant='contained' size='medium' style={{ marginLeft: "10px" }}>View Transactions</Button>
-            <Button onClick={() => setRedirect(true)} variant='contained' size='medium' style={{ marginLeft: "10px" }}>View Details</Button>
+          {isAdmin ? (
+          <div className='main-2'>
+            <Box sx={{ minWidth: 150 }}>
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">Perform Action</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                label="Perform Action"
+              >
+                <MenuItem component={"a"} href={"/requests"}>View Requests</MenuItem>
+                <MenuItem component={"a"} href={"/user-details"}>View Details</MenuItem>
+                <MenuItem component={"a"} href={"/trans-history"}>View Transactions</MenuItem>
+                <MenuItem component={"a"} href={"/chat"}>View Chat Forum</MenuItem>
+              </Select>
+            </FormControl>
+            </Box>
+            {/* <Button href='/requests' variant='contained' size='small'>View Requests</Button>
+            <Button onClick={() => { setTransaction(true) }} variant='contained' size='small' style={{ marginLeft: "10px" }}>View Transactions</Button>
+            <Button onClick={() => setRedirect(true)} variant='contained' size='small' style={{ marginLeft: "10px" }}>View Details</Button>
+            <Button onClick={() => setRedirect(true)} variant='contained' size='small' style={{ marginLeft: "10px" }}>View Chat Forum</Button> */}
 
-          </div>) : (<div className='main-2'>
-            <Button onClick={() => setRedirect(true)} variant='contained' size='medium'>View Details</Button>
-            <Button onClick={() => { setTransaction(true) }} variant='contained' size='medium' style={{ marginLeft: "10px" }}>View Transactions</Button>
-          </div>)
+          </div>
+          ) : (
+          <div className='main-2'>
+          <Box sx={{ minWidth: 150 }}>
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">Perform Action</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                label="Perform Action"
+              >
+                <MenuItem component={"a"} href={"/user-details"}>View Details</MenuItem>
+                <MenuItem component={"a"} href={"/trans-history"}>View Transactions</MenuItem>
+                <MenuItem component={"a"} href={"/chat"}>View Chat Forum</MenuItem>
+              </Select>
+            </FormControl>
+            </Box>
+            {/* <Button onClick={() => setRedirect(true)} variant='contained' size='small'>View Details</Button>
+            <Button onClick={() => { setTransaction(true) }} variant='contained' size='small' style={{ marginLeft: "10px" }}>View Transactions</Button>
+            <Button onClick={() => setRedirect(true)} variant='contained' size='small' style={{ marginLeft: "10px" }}>View Chat Forum</Button> */}
+          </div>
+          )
           }
           <div className='main-2'>SHG: {name}</div>
           <div className='main-1'>Collected:{shgBankData?.balance} <span style={{ fontWeight: 'bolder' }}>↑</span></div>
