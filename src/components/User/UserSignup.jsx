@@ -441,7 +441,7 @@ const Signup = () => {
                     <div className="control">
                         <span>
                             Already have an account?{" "}
-                            <Link to="/login" className="login-link-1">
+                            <Link to="/user-login" className="login-link-1">
                                 Login
                             </Link>
                         </span>

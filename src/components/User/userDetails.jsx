@@ -8,14 +8,20 @@ import { Navigate } from 'react-router';
 
 const UserDetails = (props) => {
     const [redirect, setRedirect] = useState(false)
-    const [fields, setFields] = useState([])
+    const [fields, setFields] = useState()
     const [userBankData, setUserBankData] = useState({})
     const [SHGBankData, setSHGBankData] = useState({})
     const [amount, setAmount] = useState(0);
     const [aadhar, setAadhar] = useState(0);
+    console.log(currentUser)
     const getUserBankDetails = async () => {
         try {
-            const userRef = doc(db, "bank-details", currentUser?.aadhar);
+            const docRef = doc(db, "user", localStorage?.getItem("email"));
+            const docSnap = await getDoc(docRef);
+            console.log(docSnap.data())
+            setFields(docSnap?.data())
+            console.log(fields)
+            const userRef = doc(db, "bank-details", docSnap?.data()?.aadhar);
             const userSnap = await getDoc(userRef);
             console.log(userSnap.data());
             setUserBankData({ ...userSnap.data() })
@@ -52,7 +58,7 @@ const UserDetails = (props) => {
         const collection = {
             amountTransferred: amount,
             timeStamp: new Date().toISOString(),
-            senderName: currentUser.username,
+            senderName: fields.username,
             receiverName: localStorage.getItem("shg"),
             from: userAadhar,
             to: shgAadhar
@@ -139,10 +145,10 @@ const UserDetails = (props) => {
                             {localStorage.getItem("isAdmin") === null ? <><Col sm="6" style={{ display: "flex", flexDirection: "column" }}>
                                 <h1>General Details</h1>
                                 <div style={{ marginTop: "10px", display: "flex", flexDirection: "column", height: "200px", justifyContent: "space-between" }}>
-                                    <span>Name : {currentUser.username}</span>
-                                    <span>Aadhar : {currentUser.aadhar}</span>
-                                    <span>Phone : {currentUser.phoneNo}</span>
-                                    <span>Email : {currentUser.email}</span>
+                                    <span>Name : {fields?.username}</span>
+                                    <span>Aadhar : {fields?.aadhar}</span>
+                                    <span>Phone : {fields?.phoneNo}</span>
+                                    <span>Email : {fields?.email}</span>
                                 </div>
                             </Col>
                                 <Col>
@@ -152,7 +158,7 @@ const UserDetails = (props) => {
                                     <h1>Transfer money to SHG</h1>
                                     <div>
                                         <Row style={{ marginBottom: "20px" }}>
-                                            Your Balance : {userBankData.balance}
+                                            Your Balance : {userBankData?.balance}
                                         </Row>
                                         <Row style={{ marginBottom: "20px" }}>
                                             <Form.Label>
@@ -162,10 +168,10 @@ const UserDetails = (props) => {
                                                 setAmount(Number(e.target.value))
                                                 console.log(typeof (amount), amount);
                                             }} />
-                                            <Button variant="info" disabled={amount === 0} onClick={() => { transferFund(currentUser?.aadhar, localStorage.getItem("shgAadhar"), amount) }} style={{ padding: "5px 10px", marginLeft: "10px" }}>Transfer</Button>
+                                            <Button variant="info" disabled={amount === 0} onClick={() => { transferFund(fields?.aadhar, localStorage.getItem("shgAadhar"), amount) }} style={{ padding: "5px 10px", marginLeft: "10px" }}>Transfer</Button>
                                         </Row>
                                         <Row>
-                                            SHG Balance : {SHGBankData.balance}
+                                            SHG Balance : {SHGBankData?.balance}
                                         </Row>
                                     </div>
                                 </Col></> :
