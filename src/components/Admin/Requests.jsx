@@ -56,7 +56,7 @@ const Requests = () => {
       })
     }
     fetchData()
-  }, [fields, id])
+  }, [fields])
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {

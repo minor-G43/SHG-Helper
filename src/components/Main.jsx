@@ -1,108 +1,107 @@
-import { useEffect, useState } from 'react'
-import '../App.css'
-import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
-import { styled } from '@mui/material/styles';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
+import { useEffect, useState } from "react";
+import "../App.css";
+import { collection, getDocs, doc, getDoc } from "firebase/firestore";
+import { styled } from "@mui/material/styles";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell, { tableCellClasses } from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import Box from "@mui/material/Box";
-import Paper from '@mui/material/Paper';
-import Button from '@mui/material/Button';
-import { db } from '../firebase.config';
-import { Navigate } from 'react-router-dom';
-import { currentUser } from '../cuurentUser';
+import Paper from "@mui/material/Paper";
+import Button from "@mui/material/Button";
+import { db } from "../firebase.config";
+import { Navigate } from "react-router-dom";
+import { currentUser } from "../cuurentUser";
 const Main = () => {
-  const userEmail = localStorage?.getItem("email")
-  const userAadhar = localStorage?.getItem("aadhar")
-  const isAdmin = localStorage?.getItem("isAdmin")
-  const [fields, setFields] = useState([])
-  const [name, setName] = useState()
-  const [shgBankData, setSHGBankData] = useState({})
-  const [id, setId] = useState()
-  const [redirect, setRedirect] = useState(false)
-  const [transaction, setTransaction] = useState(false)
-  const [bankData, setBankData] = useState({})
+  const userEmail = localStorage?.getItem("email");
+  const userAadhar = localStorage?.getItem("aadhar");
+  const isAdmin = localStorage?.getItem("isAdmin");
+  const [fields, setFields] = useState([]);
+  const [name, setName] = useState();
+  const [shgBankData, setSHGBankData] = useState({});
+  const [id, setId] = useState();
+  const [redirect, setRedirect] = useState(false);
+  const [transaction, setTransaction] = useState(false);
+  const [bankData, setBankData] = useState({});
 
   const fetchData = async () => {
-    const docRef = collection(db, "shg")
-    const docSnap = await getDocs(docRef)
+    const docRef = collection(db, "shg");
+    const docSnap = await getDocs(docRef);
     if (localStorage.getItem("isAdmin") === null) {
       const bankRef = collection(db, "bank-details");
       const bankSnap = await getDocs(bankRef);
       var temp = {};
-      bankSnap.forEach(e => {
-        temp[e.data().aadhar] = e.data()
-      })
+      bankSnap.forEach((e) => {
+        temp[e.data().aadhar] = e.data();
+      });
       console.log(temp);
       setBankData(temp);
-    }
-    else {
+    } else {
     }
     if (localStorage.getItem("isAdmin") === null) {
-      docSnap.forEach(async doc => {
+      docSnap.forEach(async (doc) => {
         for (let i = 0; i < doc?.data()?.members.length; i++) {
           if (doc?.data()?.members[i]?.email === userEmail) {
-            setId(doc?.id)
-            doc?.data()?.members.forEach(e => {
+            setId(doc?.id);
+            doc?.data()?.members.forEach((e) => {
               if (e.email === localStorage.getItem("email")) {
-                console.log(e);
-                return Object.assign(currentUser, e);
+                console.log("hello", e);
+                Object.assign(currentUser, e);
+                console.log(currentUser);
+                return;
               }
-            })
-            setFields([...doc?.data()?.members])
+            });
+            setFields([...doc?.data()?.members]);
             console.log(doc?.data());
-            setName(doc?.data()?.shg_name)
-            localStorage.setItem("shg", doc?.data()?.shg_name)
-            localStorage.setItem("shgAadhar", doc?.data()?.aadhar)
-            localStorage.setItem("shg-name", doc?.data()?.shg_name)
-            localStorage.setItem("cus-name", doc?.data()?.members[i]?.username)
+            setName(doc?.data()?.shg_name);
+            localStorage.setItem("shg", doc?.data()?.shg_name);
+            localStorage.setItem("shgAadhar", doc?.data()?.aadhar);
+            localStorage.setItem("shg-name", doc?.data()?.shg_name);
+            localStorage.setItem("cus-name", doc?.data()?.members[i]?.username);
             // obj = true
             break;
           }
         }
-        console.log("fels", fields)
-      })
-      const shgRef = doc(db, "bank-details", localStorage.getItem("shgAadhar"))
-      const shgSnap = await getDoc(shgRef)
-      console.log(shgSnap.data());
-      setSHGBankData(shgSnap.data())
-    }
-    else {
-      docSnap.forEach(doc => {
-        if (doc?.data()?.email === userEmail) {
-          setFields(doc?.data()?.members)
-          setName(doc?.data()?.shg_name)
-          localStorage.setItem("shgAadhar", doc?.data()?.aadhar)
-          localStorage.setItem("shg-name", doc?.data()?.shg_name)
-          localStorage.setItem("cus-name", doc?.data()?.username)
-        }
-      })
-      const bankCollection = collection(db, "bank-details")
-      const docs = await getDocs(bankCollection)
-      const tempBankData = {}
-      docs?.forEach(e => {
-        tempBankData[e?.data().aadhar] = e?.data()
+        console.log("fels", fields);
       });
-      console.log(tempBankData);
-      const temp = {}
-      fields?.forEach(e => {
-        temp[e?.aadhar] = tempBankData[e?.aadhar]
-      })
+      const shgRef = doc(db, "bank-details", localStorage.getItem("shgAadhar"));
+      const shgSnap = await getDoc(shgRef);
+      console.log(shgSnap.data());
+      setSHGBankData(shgSnap.data());
+    } else {
+      docSnap.forEach((doc) => {
+        if (doc?.data()?.email === userEmail) {
+          setFields(doc?.data()?.members);
+          setName(doc?.data()?.shg_name);
+          localStorage.setItem("shgAadhar", doc?.data()?.aadhar);
+          localStorage.setItem("shg-name", doc?.data()?.shg_name);
+          localStorage.setItem("cus-name", doc?.data()?.username);
+        }
+      });
+      const bankCollection = collection(db, "bank-details");
+      const docs = await getDocs(bankCollection);
+      const tempBankData = {};
+      docs?.forEach((e) => {
+        tempBankData[e?.data().aadhar] = e?.data();
+      });
+      const temp = {};
+      fields?.forEach((e) => {
+        temp[e?.aadhar] = tempBankData[e?.aadhar];
+      });
       console.log(temp);
       // setFields([...fields])
-      setBankData({ ...temp })
+      setBankData({ ...temp });
     }
-  }
+  };
   useEffect(() => {
-    fetchData()
-  }, [bankData, fields])
+    fetchData();
+  }, []);
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -115,16 +114,16 @@ const Main = () => {
   }));
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    '&:nth-of-type(odd)': {
+    "&:nth-of-type(odd)": {
       backgroundColor: theme.palette.action.hover,
     },
     // hide last border
-    '&:last-child td, &:last-child th': {
+    "&:last-child td, &:last-child th": {
       border: 0,
     },
   }));
   return (
-    <div className='Main'>
+    <div className="Main">
       {/* {redirect ? <Navigate to={{
         pathname: '/user-details',
         state: { name: { name }, aadhar: { userAadhar } }
@@ -133,62 +132,87 @@ const Main = () => {
       <div className="member-border-4">
         <div className="main-head">
           {isAdmin ? (
-          <div className='main-2'>
-            <Box sx={{ minWidth: 150 }}>
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">Perform Action</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                label="Perform Action"
-              >
-                <MenuItem component={"a"} href={"/requests"}>View Requests</MenuItem>
-                <MenuItem component={"a"} href={"/user-details"}>View Details</MenuItem>
-                <MenuItem component={"a"} href={"/trans-history"}>View Transactions</MenuItem>
-                <MenuItem component={"a"} href={"/chat"}>View Chat Forum</MenuItem>
-              </Select>
-            </FormControl>
-            </Box>
-            {/* <Button href='/requests' variant='contained' size='small'>View Requests</Button>
+            <div className="main-2">
+              <Box sx={{ minWidth: 150 }}>
+                <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label">
+                    Perform Action
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    label="Perform Action"
+                  >
+                    <MenuItem component={"a"} href={"/requests"}>
+                      View Requests
+                    </MenuItem>
+                    <MenuItem component={"a"} href={"/user-details"}>
+                      View Details
+                    </MenuItem>
+                    <MenuItem component={"a"} href={"/trans-history"}>
+                      View Transactions
+                    </MenuItem>
+                    <MenuItem component={"a"} href={"/chat"}>
+                      View Chat Forum
+                    </MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+              {/* <Button href='/requests' variant='contained' size='small'>View Requests</Button>
             <Button onClick={() => { setTransaction(true) }} variant='contained' size='small' style={{ marginLeft: "10px" }}>View Transactions</Button>
             <Button onClick={() => setRedirect(true)} variant='contained' size='small' style={{ marginLeft: "10px" }}>View Details</Button>
             <Button onClick={() => setRedirect(true)} variant='contained' size='small' style={{ marginLeft: "10px" }}>View Chat Forum</Button> */}
-
-          </div>
+            </div>
           ) : (
-          <div className='main-2'>
-          <Box sx={{ minWidth: 150 }}>
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">Perform Action</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                label="Perform Action"
-              >
-                <MenuItem component={"a"} href={"/user-details"}>View Details</MenuItem>
-                <MenuItem component={"a"} href={"/trans-history"}>View Transactions</MenuItem>
-                <MenuItem component={"a"} href={"/chat"}>View Chat Forum</MenuItem>
-              </Select>
-            </FormControl>
-            </Box>
-            {/* <Button onClick={() => setRedirect(true)} variant='contained' size='small'>View Details</Button>
+            <div className="main-2">
+              <Box sx={{ minWidth: 150 }}>
+                <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label">
+                    Perform Action
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    label="Perform Action"
+                  >
+                    <MenuItem component={"a"} href={"/user-details"}>
+                      View Details
+                    </MenuItem>
+                    <MenuItem component={"a"} href={"/trans-history"}>
+                      View Transactions
+                    </MenuItem>
+                    <MenuItem component={"a"} href={"/chat"}>
+                      View Chat Forum
+                    </MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+              {/* <Button onClick={() => setRedirect(true)} variant='contained' size='small'>View Details</Button>
             <Button onClick={() => { setTransaction(true) }} variant='contained' size='small' style={{ marginLeft: "10px" }}>View Transactions</Button>
             <Button onClick={() => setRedirect(true)} variant='contained' size='small' style={{ marginLeft: "10px" }}>View Chat Forum</Button> */}
+            </div>
+          )}
+          <div className="main-2">SHG: {name}</div>
+          <div className="main-1">
+            Collected:{shgBankData?.balance}{" "}
+            <span style={{ fontWeight: "bolder" }}>↑</span>
           </div>
-          )
-          }
-          <div className='main-2'>SHG: {name}</div>
-          <div className='main-1'>Collected:{shgBankData?.balance} <span style={{ fontWeight: 'bolder' }}>↑</span></div>
         </div>
         <br />
         <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 800 }} style={{ width: 1100 }} aria-label="customized table">
+          <Table
+            sx={{ minWidth: 800 }}
+            style={{ width: 1100 }}
+            aria-label="customized table"
+          >
             <TableHead>
               <TableRow>
                 <StyledTableCell>Member Name</StyledTableCell>
                 <StyledTableCell align="right">Phone No.</StyledTableCell>
                 <StyledTableCell align="right">Aadhar No.</StyledTableCell>
-                <StyledTableCell align="right">Money Contributed</StyledTableCell>
+                <StyledTableCell align="right">
+                  Money Contributed
+                </StyledTableCell>
                 <StyledTableCell align="right">Loan Taken</StyledTableCell>
               </TableRow>
             </TableHead>
@@ -203,34 +227,44 @@ const Main = () => {
                         <StyledTableCell align="right"><span style={{color: 'red'}}>4321</span></StyledTableCell>
                         
                 </StyledTableRow> */}
-              {
-                fields.length === 0 ? (<h3 style={{ textAlign: 'center' }}>No members Found!</h3>)
-                  : (
-                    fields.map((post, i) => {
-                      return (
-                        <StyledTableRow key={post.aadhar}>
-                          <StyledTableCell component="th" scope="row">
-                            {post?.username}
-                          </StyledTableCell>
-                          <StyledTableCell align="right">{post?.phoneNo}</StyledTableCell>
-                          <StyledTableCell align="right">{post?.aadhar}</StyledTableCell>
-                          <StyledTableCell align="right">{bankData[post?.aadhar] ? bankData[post?.aadhar]?.amount_contri : ""}</StyledTableCell>
-                          <StyledTableCell align="right">{bankData[post?.aadhar] ? bankData[post?.aadhar]?.loan_amt : ""}</StyledTableCell>
-                          {/* boolean condn. for display */}
-                        </StyledTableRow>
-                      )
-                    })
-                  )
-              }
-
+              {fields.length === 0 ? (
+                <h3 style={{ textAlign: "center" }}>No members Found!</h3>
+              ) : (
+                fields.map((post, i) => {
+                  return (
+                    <StyledTableRow key={post.aadhar}>
+                      <StyledTableCell component="th" scope="row">
+                        {post?.username}
+                      </StyledTableCell>
+                      <StyledTableCell align="right">
+                        {post?.phoneNo}
+                      </StyledTableCell>
+                      <StyledTableCell align="right">
+                        {post?.aadhar}
+                      </StyledTableCell>
+                      <StyledTableCell align="right">
+                        {bankData[post?.aadhar]
+                          ? bankData[post?.aadhar]?.amount_contri
+                          : ""}
+                      </StyledTableCell>
+                      <StyledTableCell align="right">
+                        {bankData[post?.aadhar]
+                          ? bankData[post?.aadhar]?.loan_amt
+                          : ""}
+                      </StyledTableCell>
+                      {/* boolean condn. for display */}
+                    </StyledTableRow>
+                  );
+                })
+              )}
             </TableBody>
           </Table>
         </TableContainer>
         {/* </div> */}
         {/* </Stack> */}
       </div>
-    </div >
-  )
-}
+    </div>
+  );
+};
 
-export default Main
+export default Main;
