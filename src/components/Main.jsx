@@ -97,29 +97,6 @@ const Main = () => {
       const shgSnap = await getDoc(shgRef);
       console.log(shgSnap.data());
       setSHGBankData(shgSnap.data());
-    } else {
-      docSnap.forEach((doc) => {
-        if (doc?.data()?.email === userEmail) {
-          setFields(doc?.data()?.members);
-          setName(doc?.data()?.shg_name);
-          localStorage.setItem("shgAadhar", doc?.data()?.aadhar);
-          localStorage.setItem("shg-name", doc?.data()?.shg_name);
-          localStorage.setItem("cus-name", doc?.data()?.username);
-        }
-      });
-      const bankCollection = collection(db, "bank-details");
-      const docs = await getDocs(bankCollection);
-      const tempBankData = {};
-      docs?.forEach((e) => {
-        tempBankData[e?.data().aadhar] = e?.data();
-      });
-      const temp = {};
-      fields?.forEach((e) => {
-        temp[e?.aadhar] = tempBankData[e?.aadhar];
-      });
-      console.log(temp);
-
-      setBankData({ ...temp })
     }
   };
   useEffect(() => {
