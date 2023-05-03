@@ -51,7 +51,7 @@ const Details = () => {
     }
     fetchData()
 
-  },[fields])
+  },[])
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
