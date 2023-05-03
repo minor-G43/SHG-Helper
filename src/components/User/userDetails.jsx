@@ -13,6 +13,7 @@ const UserDetails = (props) => {
     const [SHGBankData, setSHGBankData] = useState({})
     const [amount, setAmount] = useState(0);
     const [aadhar, setAadhar] = useState(0);
+    console.log(currentUser);
     const getUserBankDetails = async () => {
         try {
             const userRef = doc(db, "bank-details", currentUser?.aadhar);

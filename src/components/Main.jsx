@@ -84,6 +84,7 @@ const Main = () => {
       const tempBankData = {}
       docs?.forEach(e => {
         tempBankData[e?.data().aadhar] = e?.data()
+        if (e?.data().aadhar === localStorage.getItem("shgAadhar")) { setSHGBankData({ balance: e?.data().balance }) }
       });
       console.log(tempBankData);
       const temp = {}
@@ -91,7 +92,7 @@ const Main = () => {
         temp[e?.aadhar] = tempBankData[e?.aadhar]
       })
       console.log(temp);
-      // setFields([...fields])
+
       setBankData({ ...temp })
     }
   }
