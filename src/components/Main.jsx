@@ -42,6 +42,7 @@ const Main = () => {
       });
       console.log(temp);
       setBankData(temp);
+      console.log(bankData)
     } else {
     }
     if (localStorage.getItem("isAdmin") === null) {
@@ -87,10 +88,19 @@ const Main = () => {
       })
       const bankCollection = collection(db, "bank-details")
       const docs = await getDocs(bankCollection)
+      const bankRef = collection(db, "bank-details");
+      const bankSnap = await getDocs(bankRef);
+      var temp = {};
+      bankSnap.forEach((e) => {
+        temp[e.data().aadhar] = e.data();
+      });
+      console.log(temp);
+      setBankData(temp);
+      
       const tempBankData = {}
       docs?.forEach(e => {
-        tempBankData[e?.data().aadhar] = e?.data()
-        if (e?.data().aadhar === localStorage.getItem("shgAadhar")) { setSHGBankData({ balance: e?.data().balance }) }
+        tempBankData[e?.data()?.aadhar] = e?.data()
+        if (e?.data().aadhar === localStorage.getItem("shgAadhar")) { setSHGBankData({ balance: e?.data()?.balance }) }
         console.log("fels", fields);
       });
       const shgRef = doc(db, "bank-details", localStorage.getItem("shgAadhar"));
